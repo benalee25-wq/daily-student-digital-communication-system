@@ -1,1 +1,270 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
+  <title>Student Dashboard | Daily Student Digital Communication System</title>
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: Arial, sans-serif;
+    }
+
+    body {
+      background: #f4f7fb;
+      color: #333;
+    }
+
+    /* HEADER */
+    header {
+      background: #12355b;
+      color: white;
+      padding: 18px 20px;
+    }
+
+    .header-content {
+      max-width: 1100px;
+      margin: auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .logo {
+      font-size: 18px;
+      font-weight: bold;
+    }
+
+    .logout {
+      background: white;
+      color: #12355b;
+      padding: 9px 15px;
+      border-radius: 6px;
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: bold;
+    }
+
+    /* MAIN */
+    .container {
+      max-width: 1100px;
+      margin: auto;
+      padding: 25px 18px;
+    }
+
+    .welcome {
+      margin-bottom: 25px;
+    }
+
+    .welcome h1 {
+      color: #12355b;
+      font-size: 26px;
+      margin-bottom: 8px;
+    }
+
+    .welcome p {
+      color: #666;
+    }
+
+    /* STATUS CARD */
+    .status-card {
+      background: white;
+      border-radius: 14px;
+      padding: 25px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+      margin-bottom: 25px;
+    }
+
+    .status-card h2 {
+      color: #12355b;
+      margin-bottom: 15px;
+      font-size: 20px;
+    }
+
+    .status {
+      background: #fff3cd;
+      color: #856404;
+      padding: 14px;
+      border-radius: 8px;
+      font-weight: bold;
+      margin-bottom: 20px;
+    }
+
+    .complete-btn {
+      display: inline-block;
+      background: #12355b;
+      color: white;
+      padding: 14px 20px;
+      border-radius: 8px;
+      text-decoration: none;
+      font-weight: bold;
+    }
+
+    /* DASHBOARD GRID */
+    .dashboard-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 18px;
+    }
+
+    .dashboard-card {
+      background: white;
+      border-radius: 12px;
+      padding: 22px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.07);
+      text-decoration: none;
+      color: #333;
+      transition: 0.3s;
+    }
+
+    .dashboard-card:hover {
+      transform: translateY(-3px);
+    }
+
+    .icon {
+      font-size: 35px;
+      margin-bottom: 12px;
+    }
+
+    .dashboard-card h3 {
+      color: #12355b;
+      margin-bottom: 8px;
+    }
+
+    .dashboard-card p {
+      font-size: 14px;
+      color: #666;
+      line-height: 1.5;
+    }
+
+    /* FOOTER */
+    footer {
+      text-align: center;
+      padding: 25px 15px;
+      color: #777;
+      font-size: 13px;
+      margin-top: 30px;
+    }
+
+    /* MOBILE */
+    @media (max-width: 600px) {
+      .header-content {
+        flex-direction: column;
+        gap: 15px;
+      }
+
+      .welcome h1 {
+        font-size: 23px;
+      }
+
+      .status-card {
+        padding: 20px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <header>
+    <div class="header-content">
+      <div class="logo">
+        DAILY STUDENT DIGITAL COMMUNICATION SYSTEM
+      </div>
+
+      <a href="index.html" class="logout">
+        Logout
+      </a>
+    </div>
+  </header>
+
+
+  <main class="container">
+
+    <section class="welcome">
+      <h1>Welcome, Student 👋</h1>
+
+      <p>
+        Keep track of your daily school activities and communication.
+      </p>
+    </section>
+
+
+    <!-- TODAY'S REPORT STATUS -->
+
+    <section class="status-card">
+
+      <h2>Today's Daily Report</h2>
+
+      <div class="status">
+        Status: NOT SUBMITTED
+      </div>
+
+      <a href="#" class="complete-btn">
+        COMPLETE TODAY'S REPORT
+      </a>
+
+    </section>
+
+
+    <!-- DASHBOARD FEATURES -->
+
+    <section class="dashboard-grid">
+
+      <a href="#" class="dashboard-card">
+        <div class="icon">📝</div>
+        <h3>My Previous Reports</h3>
+        <p>View your previously submitted daily school reports.</p>
+      </a>
+
+
+      <a href="#" class="dashboard-card">
+        <div class="icon">📚</div>
+        <h3>My Assignments</h3>
+        <p>View assignments and their submission deadlines.</p>
+      </a>
+
+
+      <a href="#" class="dashboard-card">
+        <div class="icon">💡</div>
+        <h3>Topics I Don't Understand</h3>
+        <p>Review learning challenges you have reported.</p>
+      </a>
+
+
+      <a href="#" class="dashboard-card">
+        <div class="icon">📊</div>
+        <h3>My Classwork Records</h3>
+        <p>View your classwork subjects and scores.</p>
+      </a>
+
+
+      <a href="#" class="dashboard-card">
+        <div class="icon">💬</div>
+        <h3>Parent Feedback</h3>
+        <p>View comments and feedback from your parent or guardian.</p>
+      </a>
+
+
+      <a href="#" class="dashboard-card">
+        <div class="icon">🔔</div>
+        <h3>Notifications</h3>
+        <p>View important notifications and updates.</p>
+      </a>
+
+    </section>
+
+  </main>
+
+
+  <footer>
+    © 2026 Daily Student Digital Communication System<br>
+    Connecting Students, Parents and Schools Every Day.
+  </footer>
+
+</body>
+</html>
