@@ -1,1 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
+  <title>Administrator Login | Daily Student Digital Communication System</title>
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: Arial, sans-serif;
+    }
+
+    body {
+      min-height: 100vh;
+      background: linear-gradient(135deg, #12355b, #1d5d8f);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+    }
+
+    .login-container {
+      width: 100%;
+      max-width: 420px;
+      background: white;
+      border-radius: 15px;
+      padding: 35px 25px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    }
+
+    .logo {
+      text-align: center;
+      margin-bottom: 25px;
+    }
+
+    .admin-icon {
+      width: 70px;
+      height: 70px;
+      background: #e8f4fb;
+      border-radius: 50%;
+      margin: 0 auto 15px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 35px;
+    }
+
+    .logo h1 {
+      color: #12355b;
+      font-size: 20px;
+      line-height: 1.4;
+    }
+
+    .logo p {
+      color: #777;
+      margin-top: 8px;
+      font-size: 14px;
+    }
+
+    h2 {
+      text-align: center;
+      color: #12355b;
+      margin-bottom: 25px;
+    }
+
+    .security-note {
+      background: #eef6fb;
+      border-left: 4px solid #12355b;
+      padding: 12px;
+      font-size: 13px;
+      color: #555;
+      margin-bottom: 20px;
+      border-radius: 5px;
+    }
+
+    .form-group {
+      margin-bottom: 18px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 7px;
+      font-weight: bold;
+      color: #444;
+      font-size: 14px;
+    }
+
+    input {
+      width: 100%;
+      padding: 14px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      font-size: 16px;
+      outline: none;
+    }
+
+    input:focus {
+      border-color: #1d5d8f;
+    }
+
+    .login-btn {
+      width: 100%;
+      padding: 14px;
+      border: none;
+      border-radius: 8px;
+      background: #12355b;
+      color: white;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .login-btn:hover {
+      background: #1d5d8f;
+    }
+
+    .forgot {
+      text-align: right;
+      margin-top: 12px;
+    }
+
+    .forgot a {
+      color: #1d5d8f;
+      text-decoration: none;
+      font-size: 14px;
+    }
+
+    .back-home {
+      text-align: center;
+      margin-top: 25px;
+    }
+
+    .back-home a {
+      color: #777;
+      text-decoration: none;
+      font-size: 14px;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="login-container">
+
+    <div class="logo">
+      <div class="admin-icon">🏫</div>
+
+      <h1>DAILY STUDENT DIGITAL<br>COMMUNICATION SYSTEM</h1>
+
+      <p>Connecting Students, Parents and Schools Every Day.</p>
+    </div>
+
+    <h2>Administrator Login</h2>
+
+    <div class="security-note">
+      🔒 This area is restricted to authorized school administrators only.
+    </div>
+
+    <form>
+
+      <div class="form-group">
+        <label>Administrator Email</label>
+
+        <input
+          type="email"
+          placeholder="Enter administrator email"
+          required
+        >
+      </div>
+
+      <div class="form-group">
+        <label>Password</label>
+
+        <input
+          type="password"
+          placeholder="Enter password"
+          required
+        >
+      </div>
+
+      <button type="submit" class="login-btn">
+        SECURE LOGIN
+      </button>
+
+    </form>
+
+    <div class="forgot">
+      <a href="#">Forgot Password?</a>
+    </div>
+
+    <div class="back-home">
+      <a href="index.html">← Back to Homepage</a>
+    </div>
+
+  </div>
+
+</body>
+</html>
