@@ -1,1 +1,290 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
+  <title>Parent Dashboard | Daily Student Digital Communication System</title>
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: Arial, sans-serif;
+    }
+
+    body {
+      background: #f4f7fb;
+      color: #333;
+    }
+
+    header {
+      background: #12355b;
+      color: white;
+      padding: 18px 20px;
+    }
+
+    .header-content {
+      max-width: 1100px;
+      margin: auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .logo {
+      font-size: 18px;
+      font-weight: bold;
+    }
+
+    .logout {
+      background: white;
+      color: #12355b;
+      padding: 9px 15px;
+      border-radius: 6px;
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: bold;
+    }
+
+    .container {
+      max-width: 1100px;
+      margin: auto;
+      padding: 25px 18px;
+    }
+
+    .welcome {
+      margin-bottom: 25px;
+    }
+
+    .welcome h1 {
+      color: #12355b;
+      font-size: 26px;
+      margin-bottom: 8px;
+    }
+
+    .welcome p {
+      color: #666;
+    }
+
+    .child-selector {
+      background: white;
+      padding: 20px;
+      border-radius: 12px;
+      margin-bottom: 25px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.07);
+    }
+
+    .child-selector label {
+      display: block;
+      font-weight: bold;
+      margin-bottom: 10px;
+      color: #12355b;
+    }
+
+    select {
+      width: 100%;
+      max-width: 400px;
+      padding: 13px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      font-size: 16px;
+    }
+
+    .report-status {
+      background: white;
+      border-radius: 14px;
+      padding: 25px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+      margin-bottom: 25px;
+    }
+
+    .report-status h2 {
+      color: #12355b;
+      margin-bottom: 15px;
+      font-size: 20px;
+    }
+
+    .status {
+      background: #e8f5e9;
+      color: #2e7d32;
+      padding: 14px;
+      border-radius: 8px;
+      font-weight: bold;
+      margin-bottom: 18px;
+    }
+
+    .view-btn {
+      display: inline-block;
+      background: #12355b;
+      color: white;
+      padding: 13px 20px;
+      border-radius: 8px;
+      text-decoration: none;
+      font-weight: bold;
+    }
+
+    .dashboard-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 18px;
+    }
+
+    .dashboard-card {
+      background: white;
+      border-radius: 12px;
+      padding: 22px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.07);
+      text-decoration: none;
+      color: #333;
+      transition: 0.3s;
+    }
+
+    .dashboard-card:hover {
+      transform: translateY(-3px);
+    }
+
+    .icon {
+      font-size: 35px;
+      margin-bottom: 12px;
+    }
+
+    .dashboard-card h3 {
+      color: #12355b;
+      margin-bottom: 8px;
+    }
+
+    .dashboard-card p {
+      font-size: 14px;
+      color: #666;
+      line-height: 1.5;
+    }
+
+    footer {
+      text-align: center;
+      padding: 25px 15px;
+      color: #777;
+      font-size: 13px;
+      margin-top: 30px;
+    }
+
+    @media (max-width: 600px) {
+      .header-content {
+        flex-direction: column;
+        gap: 15px;
+      }
+
+      .welcome h1 {
+        font-size: 23px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <header>
+    <div class="header-content">
+
+      <div class="logo">
+        DAILY STUDENT DIGITAL COMMUNICATION SYSTEM
+      </div>
+
+      <a href="index.html" class="logout">Logout</a>
+
+    </div>
+  </header>
+
+
+  <main class="container">
+
+    <section class="welcome">
+      <h1>Welcome, Parent / Guardian 👋</h1>
+      <p>Stay connected with your child's daily school experience.</p>
+    </section>
+
+
+    <section class="child-selector">
+
+      <label>Select Child</label>
+
+      <select>
+        <option>Select a Child</option>
+        <option>Student Name - Class</option>
+      </select>
+
+    </section>
+
+
+    <section class="report-status">
+
+      <h2>Today's Daily Report</h2>
+
+      <div class="status">
+        ✓ Daily Report Available
+      </div>
+
+      <a href="#" class="view-btn">
+        VIEW TODAY'S REPORT
+      </a>
+
+    </section>
+
+
+    <section class="dashboard-grid">
+
+      <a href="#" class="dashboard-card">
+        <div class="icon">📅</div>
+        <h3>Daily Reports</h3>
+        <p>View your child's reports by date.</p>
+      </a>
+
+      <a href="#" class="dashboard-card">
+        <div class="icon">📚</div>
+        <h3>Assignments</h3>
+        <p>Monitor assignments and submission deadlines.</p>
+      </a>
+
+      <a href="#" class="dashboard-card">
+        <div class="icon">💡</div>
+        <h3>Learning Challenges</h3>
+        <p>View topics your child does not understand.</p>
+      </a>
+
+      <a href="#" class="dashboard-card">
+        <div class="icon">📊</div>
+        <h3>Classwork Scores</h3>
+        <p>Review classwork records and scores.</p>
+      </a>
+
+      <a href="#" class="dashboard-card">
+        <div class="icon">⚠️</div>
+        <h3>Unusual Incidents</h3>
+        <p>View unusual events reported by your child.</p>
+      </a>
+
+      <a href="#" class="dashboard-card">
+        <div class="icon">💬</div>
+        <h3>My Responses</h3>
+        <p>View comments and concerns submitted to the school.</p>
+      </a>
+
+      <a href="#" class="dashboard-card">
+        <div class="icon">🔔</div>
+        <h3>Notifications</h3>
+        <p>View important updates and notifications.</p>
+      </a>
+
+    </section>
+
+  </main>
+
+
+  <footer>
+    © 2026 Daily Student Digital Communication System<br>
+    Connecting Students, Parents and Schools Every Day.
+  </footer>
+
+</body>
+</html>
