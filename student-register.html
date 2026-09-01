@@ -1,1 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
+  <title>Student Registration | Daily Student Digital Communication System</title>
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: Arial, sans-serif;
+    }
+
+    body {
+      min-height: 100vh;
+      background: linear-gradient(135deg, #12355b, #1d5d8f);
+      padding: 25px 15px;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 600px;
+      margin: auto;
+      background: white;
+      border-radius: 15px;
+      padding: 30px 20px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    }
+
+    .header {
+      text-align: center;
+      margin-bottom: 25px;
+    }
+
+    .icon {
+      width: 70px;
+      height: 70px;
+      background: #e8f4fb;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 35px;
+      margin: auto auto 15px;
+    }
+
+    h1 {
+      color: #12355b;
+      font-size: 24px;
+    }
+
+    .subtitle {
+      color: #777;
+      font-size: 14px;
+      margin-top: 8px;
+    }
+
+    h2 {
+      color: #12355b;
+      margin: 25px 0 15px;
+      font-size: 19px;
+      border-bottom: 2px solid #e8f4fb;
+      padding-bottom: 8px;
+    }
+
+    .form-group {
+      margin-bottom: 18px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 7px;
+      font-size: 14px;
+      font-weight: bold;
+      color: #444;
+    }
+
+    input,
+    select {
+      width: 100%;
+      padding: 13px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      font-size: 16px;
+      outline: none;
+    }
+
+    input:focus,
+    select:focus {
+      border-color: #1d5d8f;
+    }
+
+    .register-btn {
+      width: 100%;
+      padding: 15px;
+      border: none;
+      background: #12355b;
+      color: white;
+      font-size: 16px;
+      font-weight: bold;
+      border-radius: 8px;
+      cursor: pointer;
+      margin-top: 10px;
+    }
+
+    .register-btn:hover {
+      background: #1d5d8f;
+    }
+
+    .login-link {
+      text-align: center;
+      margin-top: 20px;
+      color: #666;
+    }
+
+    .login-link a {
+      color: #12355b;
+      font-weight: bold;
+      text-decoration: none;
+    }
+
+    .back-home {
+      text-align: center;
+      margin-top: 15px;
+    }
+
+    .back-home a {
+      color: #777;
+      text-decoration: none;
+      font-size: 14px;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="container">
+
+    <div class="header">
+      <div class="icon">🎓</div>
+
+      <h1>Student Registration</h1>
+
+      <p class="subtitle">
+        Daily Student Digital Communication System
+      </p>
+    </div>
+
+
+    <form>
+
+      <h2>Student Information</h2>
+
+      <div class="form-group">
+        <label>Student Full Name</label>
+        <input type="text" placeholder="Enter full name" required>
+      </div>
+
+      <div class="form-group">
+        <label>Date of Birth</label>
+        <input type="date" required>
+      </div>
+
+      <div class="form-group">
+        <label>Gender</label>
+        <select required>
+          <option value="">Select Gender</option>
+          <option>Male</option>
+          <option>Female</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label>Class</label>
+        <select required>
+          <option value="">Select Class</option>
+          <option>JSS 1</option>
+          <option>JSS 2</option>
+          <option>JSS 3</option>
+          <option>SS 1</option>
+          <option>SS 2</option>
+          <option>SS 3</option>
+        </select>
+      </div>
+
+
+      <h2>Account Information</h2>
+
+      <div class="form-group">
+        <label>Email Address</label>
+        <input type="email" placeholder="Enter email address" required>
+      </div>
+
+      <div class="form-group">
+        <label>Create Password</label>
+        <input type="password" placeholder="Create password" required>
+      </div>
+
+      <div class="form-group">
+        <label>Confirm Password</label>
+        <input type="password" placeholder="Confirm password" required>
+      </div>
+
+
+      <button type="submit" class="register-btn">
+        CREATE STUDENT ACCOUNT
+      </button>
+
+    </form>
+
+
+    <div class="login-link">
+      Already have an account?
+
+      <br><br>
+
+      <a href="student-login.html">
+        Student Login
+      </a>
+    </div>
+
+    <div class="back-home">
+      <a href="index.html">
+        ← Back to Homepage
+      </a>
+    </div>
+
+  </div>
+
+</body>
+</html>
