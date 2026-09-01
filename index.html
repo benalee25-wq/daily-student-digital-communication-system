@@ -1,1 +1,626 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
 
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Daily Student Digital Communication System</title>
+
+  <style>
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: Arial, sans-serif;
+    }
+
+    body {
+      background: #f5f7fb;
+      color: #333;
+      line-height: 1.6;
+    }
+
+    /* NAVIGATION */
+
+    header {
+      background: #12355b;
+      color: white;
+      padding: 15px 7%;
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+    }
+
+    nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .logo {
+      font-size: 22px;
+      font-weight: bold;
+    }
+
+    .logo span {
+      color: #4fc3f7;
+    }
+
+    .nav-links {
+      display: flex;
+      list-style: none;
+      gap: 20px;
+    }
+
+    .nav-links a {
+      color: white;
+      text-decoration: none;
+      font-size: 14px;
+    }
+
+    .nav-links a:hover {
+      color: #4fc3f7;
+    }
+
+    /* HERO */
+
+    .hero {
+      background: linear-gradient(135deg, #12355b, #1d5d8f);
+      color: white;
+      padding: 80px 8%;
+      text-align: center;
+    }
+
+    .hero h1 {
+      font-size: 42px;
+      margin-bottom: 20px;
+    }
+
+    .hero h1 span {
+      color: #4fc3f7;
+    }
+
+    .hero p {
+      max-width: 750px;
+      margin: auto;
+      font-size: 18px;
+    }
+
+    .hero-buttons {
+      margin-top: 30px;
+    }
+
+    .btn {
+      display: inline-block;
+      padding: 14px 25px;
+      margin: 8px;
+      border-radius: 8px;
+      text-decoration: none;
+      font-weight: bold;
+    }
+
+    .primary-btn {
+      background: #4fc3f7;
+      color: #12355b;
+    }
+
+    .secondary-btn {
+      border: 2px solid white;
+      color: white;
+    }
+
+    /* SECTIONS */
+
+    section {
+      padding: 70px 8%;
+    }
+
+    .section-title {
+      text-align: center;
+      margin-bottom: 40px;
+    }
+
+    .section-title h2 {
+      font-size: 32px;
+      color: #12355b;
+    }
+
+    .section-title p {
+      color: #666;
+      margin-top: 10px;
+    }
+
+    /* CARDS */
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 25px;
+    }
+
+    .card {
+      background: white;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+      text-align: center;
+    }
+
+    .card .icon {
+      font-size: 40px;
+      margin-bottom: 15px;
+    }
+
+    .card h3 {
+      color: #12355b;
+      margin-bottom: 10px;
+    }
+
+    /* HOW IT WORKS */
+
+    .steps {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 25px;
+    }
+
+    .step {
+      text-align: center;
+    }
+
+    .step-number {
+      width: 55px;
+      height: 55px;
+      background: #12355b;
+      color: white;
+      border-radius: 50%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin: auto auto 15px;
+      font-size: 22px;
+      font-weight: bold;
+    }
+
+    /* ACCESS */
+
+    .access {
+      background: #eef4f8;
+    }
+
+    /* CTA */
+
+    .cta {
+      background: #12355b;
+      color: white;
+      text-align: center;
+    }
+
+    .cta h2 {
+      font-size: 32px;
+      margin-bottom: 15px;
+    }
+
+    .cta .btn {
+      background: #4fc3f7;
+      color: #12355b;
+      margin-top: 20px;
+    }
+
+    /* FOOTER */
+
+    footer {
+      background: #0b2239;
+      color: white;
+      text-align: center;
+      padding: 30px 10px;
+    }
+
+    footer p {
+      margin-top: 8px;
+      color: #ccc;
+    }
+
+    /* MOBILE */
+
+    @media (max-width: 768px) {
+
+      nav {
+        flex-direction: column;
+        gap: 15px;
+      }
+
+      .nav-links {
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 12px;
+      }
+
+      .hero {
+        padding: 60px 20px;
+      }
+
+      .hero h1 {
+        font-size: 30px;
+      }
+
+      .hero p {
+        font-size: 16px;
+      }
+
+      section {
+        padding: 50px 20px;
+      }
+
+    }
+
+  </style>
+
+</head>
+
+<body>
+
+  <!-- NAVIGATION -->
+
+  <header>
+
+    <nav>
+
+      <div class="logo">
+        DAILY STUDENT <span>CONNECT</span>
+      </div>
+
+      <ul class="nav-links">
+        <li><a href="#">Home</a></li>
+        <li><a href="#about">About</a></li>
+        <li><a href="#how">How It Works</a></li>
+        <li><a href="student-login.html">Student Login</a></li>
+        <li><a href="parent-login.html">Parent Login</a></li>
+        <li><a href="admin-login.html">Admin</a></li>
+      </ul>
+
+    </nav>
+
+  </header>
+
+
+  <!-- HERO -->
+
+  <section class="hero">
+
+    <h1>
+      Daily Student Digital
+      <span>Communication System</span>
+    </h1>
+
+    <p>
+      Connecting Students, Parents and Schools Every Day.
+      A secure digital platform that helps parents stay informed
+      about their children's daily school experiences.
+    </p>
+
+    <div class="hero-buttons">
+
+      <a href="student-register.html" class="btn primary-btn">
+        Student Registration
+      </a>
+
+      <a href="parent-register.html" class="btn secondary-btn">
+        Parent Registration
+      </a>
+
+    </div>
+
+  </section>
+
+
+  <!-- ABOUT -->
+
+  <section id="about">
+
+    <div class="section-title">
+
+      <h2>About the Platform</h2>
+
+      <p>
+        A digital communication bridge between students,
+        parents, guardians and schools.
+      </p>
+
+    </div>
+
+    <div class="grid">
+
+      <div class="card">
+
+        <div class="icon">📝</div>
+
+        <h3>Daily Reports</h3>
+
+        <p>
+          Students can submit reports about their daily
+          school experiences and activities.
+        </p>
+
+      </div>
+
+
+      <div class="card">
+
+        <div class="icon">👨‍👩‍👧</div>
+
+        <h3>Parent Connection</h3>
+
+        <p>
+          Parents can stay informed about their children's
+          learning experiences every day.
+        </p>
+
+      </div>
+
+
+      <div class="card">
+
+        <div class="icon">🏫</div>
+
+        <h3>School Communication</h3>
+
+        <p>
+          Schools can better understand student challenges
+          and parent concerns.
+        </p>
+
+      </div>
+
+    </div>
+
+  </section>
+
+
+  <!-- FEATURES -->
+
+  <section>
+
+    <div class="section-title">
+
+      <h2>Key Features</h2>
+
+      <p>
+        Everything needed for better daily school communication.
+      </p>
+
+    </div>
+
+    <div class="grid">
+
+      <div class="card">
+        <div class="icon">📅</div>
+        <h3>Daily Reports</h3>
+        <p>Students report their daily school activities.</p>
+      </div>
+
+      <div class="card">
+        <div class="icon">📚</div>
+        <h3>Assignments</h3>
+        <p>Track assignments and submission deadlines.</p>
+      </div>
+
+      <div class="card">
+        <div class="icon">💡</div>
+        <h3>Learning Challenges</h3>
+        <p>Students can report topics they do not understand.</p>
+      </div>
+
+      <div class="card">
+        <div class="icon">📊</div>
+        <h3>Classwork</h3>
+        <p>Track daily classwork and scores.</p>
+      </div>
+
+      <div class="card">
+        <div class="icon">🔔</div>
+        <h3>Notifications</h3>
+        <p>Parents receive notifications about reports.</p>
+      </div>
+
+      <div class="card">
+        <div class="icon">🔒</div>
+        <h3>Secure Access</h3>
+        <p>Protected access for students, parents and administrators.</p>
+      </div>
+
+    </div>
+
+  </section>
+
+
+  <!-- HOW IT WORKS -->
+
+  <section id="how">
+
+    <div class="section-title">
+
+      <h2>How It Works</h2>
+
+      <p>
+        Simple daily communication in four easy steps.
+      </p>
+
+    </div>
+
+    <div class="steps">
+
+      <div class="step">
+
+        <div class="step-number">1</div>
+
+        <h3>Student Logs In</h3>
+
+        <p>
+          The student securely accesses their account.
+        </p>
+
+      </div>
+
+
+      <div class="step">
+
+        <div class="step-number">2</div>
+
+        <h3>Complete Report</h3>
+
+        <p>
+          The student records their daily school experience.
+        </p>
+
+      </div>
+
+
+      <div class="step">
+
+        <div class="step-number">3</div>
+
+        <h3>Submit Report</h3>
+
+        <p>
+          The report is securely saved in the system.
+        </p>
+
+      </div>
+
+
+      <div class="step">
+
+        <div class="step-number">4</div>
+
+        <h3>Parent Reviews</h3>
+
+        <p>
+          Parents receive notification and review the report.
+        </p>
+
+      </div>
+
+    </div>
+
+  </section>
+
+
+  <!-- ACCESS -->
+
+  <section class="access">
+
+    <div class="section-title">
+
+      <h2>Access Your Account</h2>
+
+      <p>
+        Select your account type to continue.
+      </p>
+
+    </div>
+
+    <div class="grid">
+
+      <div class="card">
+
+        <div class="icon">🎓</div>
+
+        <h3>Student</h3>
+
+        <p>
+          Complete your daily report and track your activities.
+        </p>
+
+        <br>
+
+        <a href="student-login.html" class="btn primary-btn">
+          Student Login
+        </a>
+
+      </div>
+
+
+      <div class="card">
+
+        <div class="icon">👨‍👩‍👧</div>
+
+        <h3>Parent / Guardian</h3>
+
+        <p>
+          Stay informed about your child's daily school experience.
+        </p>
+
+        <br>
+
+        <a href="parent-login.html" class="btn primary-btn">
+          Parent Login
+        </a>
+
+      </div>
+
+
+      <div class="card">
+
+        <div class="icon">🛠️</div>
+
+        <h3>Administrator</h3>
+
+        <p>
+          Manage students, parents and communication reports.
+        </p>
+
+        <br>
+
+        <a href="admin-login.html" class="btn primary-btn">
+          Admin Login
+        </a>
+
+      </div>
+
+    </div>
+
+  </section>
+
+
+  <!-- CALL TO ACTION -->
+
+  <section class="cta">
+
+    <h2>Better Communication Starts Every Day</h2>
+
+    <p>
+      Help parents stay connected with their children's
+      daily learning experience.
+    </p>
+
+    <a href="student-register.html" class="btn">
+      Get Started
+    </a>
+
+  </section>
+
+
+  <!-- FOOTER -->
+
+  <footer>
+
+    <h3>
+      Daily Student Digital Communication System
+    </h3>
+
+    <p>
+      Connecting Students, Parents and Schools Every Day.
+    </p>
+
+    <p>
+      © 2026 Daily Student Digital Communication System.
+      All Rights Reserved.
+    </p>
+
+  </footer>
+
+</body>
+</html>
