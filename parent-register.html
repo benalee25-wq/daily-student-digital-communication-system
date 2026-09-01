@@ -1,1 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
+  <title>Parent Registration | Daily Student Digital Communication System</title>
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: Arial, sans-serif;
+    }
+
+    body {
+      min-height: 100vh;
+      background: linear-gradient(135deg, #12355b, #1d5d8f);
+      padding: 25px 15px;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 600px;
+      margin: auto;
+      background: white;
+      border-radius: 15px;
+      padding: 30px 20px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    }
+
+    .header {
+      text-align: center;
+      margin-bottom: 25px;
+    }
+
+    .icon {
+      width: 70px;
+      height: 70px;
+      background: #e8f4fb;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 35px;
+      margin: auto auto 15px;
+    }
+
+    h1 {
+      color: #12355b;
+      font-size: 24px;
+    }
+
+    .subtitle {
+      color: #777;
+      font-size: 14px;
+      margin-top: 8px;
+    }
+
+    h2 {
+      color: #12355b;
+      margin: 25px 0 15px;
+      font-size: 19px;
+      border-bottom: 2px solid #e8f4fb;
+      padding-bottom: 8px;
+    }
+
+    .form-group {
+      margin-bottom: 18px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 7px;
+      font-size: 14px;
+      font-weight: bold;
+      color: #444;
+    }
+
+    input,
+    select,
+    textarea {
+      width: 100%;
+      padding: 13px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      font-size: 16px;
+      outline: none;
+    }
+
+    textarea {
+      min-height: 100px;
+      resize: vertical;
+    }
+
+    input:focus,
+    select:focus,
+    textarea:focus {
+      border-color: #1d5d8f;
+    }
+
+    .register-btn {
+      width: 100%;
+      padding: 15px;
+      border: none;
+      background: #12355b;
+      color: white;
+      font-size: 16px;
+      font-weight: bold;
+      border-radius: 8px;
+      cursor: pointer;
+      margin-top: 10px;
+    }
+
+    .register-btn:hover {
+      background: #1d5d8f;
+    }
+
+    .login-link {
+      text-align: center;
+      margin-top: 20px;
+      color: #666;
+    }
+
+    .login-link a {
+      color: #12355b;
+      font-weight: bold;
+      text-decoration: none;
+    }
+
+    .back-home {
+      text-align: center;
+      margin-top: 15px;
+    }
+
+    .back-home a {
+      color: #777;
+      text-decoration: none;
+      font-size: 14px;
+    }
+
+    .note {
+      background: #eef6fb;
+      padding: 12px;
+      border-left: 4px solid #12355b;
+      margin-top: 10px;
+      font-size: 13px;
+      color: #555;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="container">
+
+    <div class="header">
+      <div class="icon">👨‍👩‍👧</div>
+
+      <h1>Parent / Guardian Registration</h1>
+
+      <p class="subtitle">
+        Daily Student Digital Communication System
+      </p>
+    </div>
+
+    <form>
+
+      <h2>Parent / Guardian Information</h2>
+
+      <div class="form-group">
+        <label>Full Name</label>
+        <input type="text" placeholder="Enter full name" required>
+      </div>
+
+      <div class="form-group">
+        <label>Relationship to Student</label>
+
+        <select required>
+          <option value="">Select Relationship</option>
+          <option>Father</option>
+          <option>Mother</option>
+          <option>Guardian</option>
+          <option>Other</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label>Phone Number</label>
+        <input type="tel" placeholder="Enter phone number" required>
+      </div>
+
+      <div class="form-group">
+        <label>Email Address</label>
+        <input type="email" placeholder="Enter email address" required>
+      </div>
+
+      <div class="form-group">
+        <label>Home Address (Optional)</label>
+        <textarea placeholder="Enter home address"></textarea>
+      </div>
+
+      <h2>Student Information</h2>
+
+      <div class="form-group">
+        <label>Student Full Name</label>
+        <input type="text" placeholder="Enter student's full name" required>
+      </div>
+
+      <div class="form-group">
+        <label>Student Class</label>
+
+        <select required>
+          <option value="">Select Student Class</option>
+          <option>JSS 1</option>
+          <option>JSS 2</option>
+          <option>JSS 3</option>
+          <option>SS 1</option>
+          <option>SS 2</option>
+          <option>SS 3</option>
+        </select>
+      </div>
+
+      <div class="note">
+        ℹ️ The Parent/Guardian account will later be securely connected
+        to the student's account by the school administrator.
+      </div>
+
+      <h2>Account Information</h2>
+
+      <div class="form-group">
+        <label>Create Password</label>
+        <input type="password" placeholder="Create password" required>
+      </div>
+
+      <div class="form-group">
+        <label>Confirm Password</label>
+        <input type="password" placeholder="Confirm password" required>
+      </div>
+
+      <button type="submit" class="register-btn">
+        CREATE PARENT ACCOUNT
+      </button>
+
+    </form>
+
+    <div class="login-link">
+      Already have an account?
+
+      <br><br>
+
+      <a href="parent-login.html">
+        Parent Login
+      </a>
+    </div>
+
+    <div class="back-home">
+      <a href="index.html">
+        ← Back to Homepage
+      </a>
+    </div>
+
+  </div>
+
+</body>
+</html>
