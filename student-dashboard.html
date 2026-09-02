@@ -47,6 +47,8 @@
       text-decoration: none;
       font-size: 14px;
       font-weight: bold;
+      border: none;
+      cursor: pointer;
     }
 
     /* MAIN */
@@ -68,6 +70,41 @@
 
     .welcome p {
       color: #666;
+    }
+
+    /* PROFILE CARD */
+    .profile-card {
+      background: white;
+      border-radius: 14px;
+      padding: 25px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+      margin-bottom: 25px;
+    }
+
+    .profile-card h2 {
+      color: #12355b;
+      margin-bottom: 15px;
+      font-size: 20px;
+    }
+
+    .profile-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 15px;
+    }
+
+    .profile-item label {
+      display: block;
+      font-size: 12px;
+      color: #888;
+      font-weight: bold;
+      text-transform: uppercase;
+      margin-bottom: 4px;
+    }
+
+    .profile-item p {
+      font-size: 15px;
+      color: #222;
     }
 
     /* STATUS CARD */
@@ -141,6 +178,17 @@
       line-height: 1.5;
     }
 
+    /* LOADING STATE */
+    .loading-screen {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #12355b;
+      font-weight: bold;
+      font-size: 16px;
+    }
+
     /* FOOTER */
     footer {
       text-align: center;
@@ -161,7 +209,8 @@
         font-size: 23px;
       }
 
-      .status-card {
+      .status-card,
+      .profile-card {
         padding: 20px;
       }
     }
@@ -170,101 +219,204 @@
 
 <body>
 
-  <header>
-    <div class="header-content">
-      <div class="logo">
-        DAILY STUDENT DIGITAL COMMUNICATION SYSTEM
+  <!-- Shown briefly while we check login + load student data -->
+  <div id="loadingScreen" class="loading-screen">
+    Loading your dashboard...
+  </div>
+
+  <!-- Real dashboard, hidden until data is ready -->
+  <div id="dashboardContent" style="display:none;">
+
+    <header>
+      <div class="header-content">
+        <div class="logo">
+          DAILY STUDENT DIGITAL COMMUNICATION SYSTEM
+        </div>
+
+        <button class="logout" id="logoutBtn">
+          Logout
+        </button>
       </div>
-
-      <a href="index.html" class="logout">
-        Logout
-      </a>
-    </div>
-  </header>
+    </header>
 
 
-  <main class="container">
+    <main class="container">
 
-    <section class="welcome">
-      <h1>Welcome, Student 👋</h1>
+      <section class="welcome">
+        <h1 id="welcomeHeading">Welcome, Student 👋</h1>
 
-      <p>
-        Keep track of your daily school activities and communication.
-      </p>
-    </section>
-
-
-    <!-- TODAY'S REPORT STATUS -->
-
-    <section class="status-card">
-
-      <h2>Today's Daily Report</h2>
-
-      <div class="status">
-        Status: NOT SUBMITTED
-      </div>
-
-      <a href="#" class="complete-btn">
-        COMPLETE TODAY'S REPORT
-      </a>
-
-    </section>
+        <p>
+          Keep track of your daily school activities and communication.
+        </p>
+      </section>
 
 
-    <!-- DASHBOARD FEATURES -->
+      <!-- PROFILE -->
 
-    <section class="dashboard-grid">
+      <section class="profile-card">
 
-      <a href="#" class="dashboard-card">
-        <div class="icon">📝</div>
-        <h3>My Previous Reports</h3>
-        <p>View your previously submitted daily school reports.</p>
-      </a>
+        <h2>My Profile</h2>
 
+        <div class="profile-grid">
 
-      <a href="#" class="dashboard-card">
-        <div class="icon">📚</div>
-        <h3>My Assignments</h3>
-        <p>View assignments and their submission deadlines.</p>
-      </a>
+          <div class="profile-item">
+            <label>Full Name</label>
+            <p id="profileName">—</p>
+          </div>
 
+          <div class="profile-item">
+            <label>Class</label>
+            <p id="profileClass">—</p>
+          </div>
 
-      <a href="#" class="dashboard-card">
-        <div class="icon">💡</div>
-        <h3>Topics I Don't Understand</h3>
-        <p>Review learning challenges you have reported.</p>
-      </a>
+          <div class="profile-item">
+            <label>Gender</label>
+            <p id="profileGender">—</p>
+          </div>
 
+          <div class="profile-item">
+            <label>Date of Birth</label>
+            <p id="profileDob">—</p>
+          </div>
 
-      <a href="#" class="dashboard-card">
-        <div class="icon">📊</div>
-        <h3>My Classwork Records</h3>
-        <p>View your classwork subjects and scores.</p>
-      </a>
+          <div class="profile-item">
+            <label>Email</label>
+            <p id="profileEmail">—</p>
+          </div>
 
+        </div>
 
-      <a href="#" class="dashboard-card">
-        <div class="icon">💬</div>
-        <h3>Parent Feedback</h3>
-        <p>View comments and feedback from your parent or guardian.</p>
-      </a>
-
-
-      <a href="#" class="dashboard-card">
-        <div class="icon">🔔</div>
-        <h3>Notifications</h3>
-        <p>View important notifications and updates.</p>
-      </a>
-
-    </section>
-
-  </main>
+      </section>
 
 
-  <footer>
-    © 2026 Daily Student Digital Communication System<br>
-    Connecting Students, Parents and Schools Every Day.
-  </footer>
+      <!-- TODAY'S REPORT STATUS -->
+
+      <section class="status-card">
+
+        <h2>Today's Daily Report</h2>
+
+        <div class="status">
+          Status: NOT SUBMITTED
+        </div>
+
+        <a href="#" class="complete-btn">
+          COMPLETE TODAY'S REPORT
+        </a>
+
+      </section>
+
+
+      <!-- DASHBOARD FEATURES -->
+
+      <section class="dashboard-grid">
+
+        <a href="#" class="dashboard-card">
+          <div class="icon">📝</div>
+          <h3>My Previous Reports</h3>
+          <p>View your previously submitted daily school reports.</p>
+        </a>
+
+
+        <a href="#" class="dashboard-card">
+          <div class="icon">📚</div>
+          <h3>My Assignments</h3>
+          <p>View assignments and their submission deadlines.</p>
+        </a>
+
+
+        <a href="#" class="dashboard-card">
+          <div class="icon">💡</div>
+          <h3>Topics I Don't Understand</h3>
+          <p>Review learning challenges you have reported.</p>
+        </a>
+
+
+        <a href="#" class="dashboard-card">
+          <div class="icon">📊</div>
+          <h3>My Classwork Records</h3>
+          <p>View your classwork subjects and scores.</p>
+        </a>
+
+
+        <a href="#" class="dashboard-card">
+          <div class="icon">💬</div>
+          <h3>Parent Feedback</h3>
+          <p>View comments and feedback from your parent or guardian.</p>
+        </a>
+
+
+        <a href="#" class="dashboard-card">
+          <div class="icon">🔔</div>
+          <h3>Notifications</h3>
+          <p>View important notifications and updates.</p>
+        </a>
+
+      </section>
+
+    </main>
+
+
+    <footer>
+      © 2026 Daily Student Digital Communication System<br>
+      Connecting Students, Parents and Schools Every Day.
+    </footer>
+
+  </div>
+
+  <!-- Supabase JS SDK (must load before supabase-config.js) -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase-config.js"></script>
+
+  <script>
+    const loadingScreen = document.getElementById("loadingScreen");
+    const dashboardContent = document.getElementById("dashboardContent");
+
+    async function loadDashboard() {
+      // 1. Check if a student is actually logged in
+      const { data: sessionData } = await supabaseClient.auth.getSession();
+      const session = sessionData.session;
+
+      if (!session) {
+        // No active session — send them to login instead
+        window.location.href = "student-login.html";
+        return;
+      }
+
+      // 2. Fetch this student's record
+      const { data: student, error } = await supabaseClient
+        .from("students")
+        .select("full_name, class, gender, date_of_birth, email")
+        .eq("user_id", session.user.id)
+        .single();
+
+      if (error || !student) {
+        // Logged in, but not a registered student — send back to login
+        await supabaseClient.auth.signOut();
+        window.location.href = "student-login.html";
+        return;
+      }
+
+      // 3. Fill in the page with real data
+      const firstName = student.full_name.split(" ")[0];
+      document.getElementById("welcomeHeading").textContent = "Welcome, " + firstName + " 👋";
+      document.getElementById("profileName").textContent = student.full_name;
+      document.getElementById("profileClass").textContent = student.class;
+      document.getElementById("profileGender").textContent = student.gender;
+      document.getElementById("profileDob").textContent = student.date_of_birth;
+      document.getElementById("profileEmail").textContent = student.email;
+
+      // 4. Reveal the dashboard
+      loadingScreen.style.display = "none";
+      dashboardContent.style.display = "block";
+    }
+
+    document.getElementById("logoutBtn")?.addEventListener("click", async function () {
+      await supabaseClient.auth.signOut();
+      window.location.href = "index.html";
+    });
+
+    loadDashboard();
+  </script>
 
 </body>
 </html>
