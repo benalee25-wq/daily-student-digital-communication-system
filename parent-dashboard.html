@@ -46,6 +46,8 @@
       text-decoration: none;
       font-size: 14px;
       font-weight: bold;
+      border: none;
+      cursor: pointer;
     }
 
     .container {
@@ -161,6 +163,16 @@
       line-height: 1.5;
     }
 
+    .loading-screen {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #12355b;
+      font-weight: bold;
+      font-size: 16px;
+    }
+
     footer {
       text-align: center;
       padding: 25px 15px;
@@ -184,107 +196,171 @@
 
 <body>
 
-  <header>
-    <div class="header-content">
+  <!-- Shown briefly while we check login + load parent data -->
+  <div id="loadingScreen" class="loading-screen">
+    Loading your dashboard...
+  </div>
 
-      <div class="logo">
-        DAILY STUDENT DIGITAL COMMUNICATION SYSTEM
+  <!-- Real dashboard, hidden until data is ready -->
+  <div id="dashboardContent" style="display:none;">
+
+    <header>
+      <div class="header-content">
+
+        <div class="logo">
+          DAILY STUDENT DIGITAL COMMUNICATION SYSTEM
+        </div>
+
+        <button class="logout" id="logoutBtn">Logout</button>
+
       </div>
-
-      <a href="index.html" class="logout">Logout</a>
-
-    </div>
-  </header>
+    </header>
 
 
-  <main class="container">
+    <main class="container">
 
-    <section class="welcome">
-      <h1>Welcome, Parent / Guardian 👋</h1>
-      <p>Stay connected with your child's daily school experience.</p>
-    </section>
-
-
-    <section class="child-selector">
-
-      <label>Select Child</label>
-
-      <select>
-        <option>Select a Child</option>
-        <option>Student Name - Class</option>
-      </select>
-
-    </section>
+      <section class="welcome">
+        <h1 id="welcomeHeading">Welcome, Parent / Guardian 👋</h1>
+        <p>Stay connected with your child's daily school experience.</p>
+      </section>
 
 
-    <section class="report-status">
+      <section class="child-selector">
 
-      <h2>Today's Daily Report</h2>
+        <label>Select Child</label>
 
-      <div class="status">
-        ✓ Daily Report Available
-      </div>
+        <select id="childSelect">
+          <option value="">Select a Child</option>
+        </select>
 
-      <a href="#" class="view-btn">
-        VIEW TODAY'S REPORT
-      </a>
-
-    </section>
+      </section>
 
 
-    <section class="dashboard-grid">
+      <section class="report-status">
 
-      <a href="#" class="dashboard-card">
-        <div class="icon">📅</div>
-        <h3>Daily Reports</h3>
-        <p>View your child's reports by date.</p>
-      </a>
+        <h2>Today's Daily Report</h2>
 
-      <a href="#" class="dashboard-card">
-        <div class="icon">📚</div>
-        <h3>Assignments</h3>
-        <p>Monitor assignments and submission deadlines.</p>
-      </a>
+        <div class="status">
+          ✓ Daily Report Available
+        </div>
 
-      <a href="#" class="dashboard-card">
-        <div class="icon">💡</div>
-        <h3>Learning Challenges</h3>
-        <p>View topics your child does not understand.</p>
-      </a>
+        <a href="#" class="view-btn">
+          VIEW TODAY'S REPORT
+        </a>
 
-      <a href="#" class="dashboard-card">
-        <div class="icon">📊</div>
-        <h3>Classwork Scores</h3>
-        <p>Review classwork records and scores.</p>
-      </a>
-
-      <a href="#" class="dashboard-card">
-        <div class="icon">⚠️</div>
-        <h3>Unusual Incidents</h3>
-        <p>View unusual events reported by your child.</p>
-      </a>
-
-      <a href="#" class="dashboard-card">
-        <div class="icon">💬</div>
-        <h3>My Responses</h3>
-        <p>View comments and concerns submitted to the school.</p>
-      </a>
-
-      <a href="#" class="dashboard-card">
-        <div class="icon">🔔</div>
-        <h3>Notifications</h3>
-        <p>View important updates and notifications.</p>
-      </a>
-
-    </section>
-
-  </main>
+      </section>
 
 
-  <footer>
-    © 2026 Daily Student Digital Communication System<br>
-    Connecting Students, Parents and Schools Every Day.
-  </footer>
+      <section class="dashboard-grid">
+
+        <a href="#" class="dashboard-card">
+          <div class="icon">📅</div>
+          <h3>Daily Reports</h3>
+          <p>View your child's reports by date.</p>
+        </a>
+
+        <a href="#" class="dashboard-card">
+          <div class="icon">📚</div>
+          <h3>Assignments</h3>
+          <p>Monitor assignments and submission deadlines.</p>
+        </a>
+
+        <a href="#" class="dashboard-card">
+          <div class="icon">💡</div>
+          <h3>Learning Challenges</h3>
+          <p>View topics your child does not understand.</p>
+        </a>
+
+        <a href="#" class="dashboard-card">
+          <div class="icon">📊</div>
+          <h3>Classwork Scores</h3>
+          <p>Review classwork records and scores.</p>
+        </a>
+
+        <a href="#" class="dashboard-card">
+          <div class="icon">⚠️</div>
+          <h3>Unusual Incidents</h3>
+          <p>View unusual events reported by your child.</p>
+        </a>
+
+        <a href="#" class="dashboard-card">
+          <div class="icon">💬</div>
+          <h3>My Responses</h3>
+          <p>View comments and concerns submitted to the school.</p>
+        </a>
+
+        <a href="#" class="dashboard-card">
+          <div class="icon">🔔</div>
+          <h3>Notifications</h3>
+          <p>View important updates and notifications.</p>
+        </a>
+
+      </section>
+
+    </main>
+
+
+    <footer>
+      © 2026 Daily Student Digital Communication System<br>
+      Connecting Students, Parents and Schools Every Day.
+    </footer>
+
+  </div>
+
+  <!-- Supabase JS SDK (must load before supabase-config.js) -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase-config.js"></script>
+
+  <script>
+    const loadingScreen = document.getElementById("loadingScreen");
+    const dashboardContent = document.getElementById("dashboardContent");
+
+    async function loadDashboard() {
+      // 1. Check if a parent is actually logged in
+      const { data: sessionData } = await supabaseClient.auth.getSession();
+      const session = sessionData.session;
+
+      if (!session) {
+        window.location.href = "parent-login.html";
+        return;
+      }
+
+      // 2. Fetch this parent's record
+      const { data: parent, error } = await supabaseClient
+        .from("parents")
+        .select("full_name, relationship, child_full_name, child_class")
+        .eq("user_id", session.user.id)
+        .single();
+
+      if (error || !parent) {
+        await supabaseClient.auth.signOut();
+        window.location.href = "parent-login.html";
+        return;
+      }
+
+      // 3. Fill in the page with real data
+      const firstName = parent.full_name.split(" ")[0];
+      document.getElementById("welcomeHeading").textContent = "Welcome, " + firstName + " 👋";
+
+      const childSelect = document.getElementById("childSelect");
+      const option = document.createElement("option");
+      option.textContent = parent.child_full_name + " - " + parent.child_class;
+      option.value = parent.child_full_name;
+      option.selected = true;
+      childSelect.appendChild(option);
+
+      // 4. Reveal the dashboard
+      loadingScreen.style.display = "none";
+      dashboardContent.style.display = "block";
+    }
+
+    document.getElementById("logoutBtn")?.addEventListener("click", async function () {
+      await supabaseClient.auth.signOut();
+      window.location.href = "index.html";
+    });
+
+    loadDashboard();
+  </script>
 
 </body>
 </html>
