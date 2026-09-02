@@ -77,6 +77,29 @@
       border-radius: 5px;
     }
 
+    .form-message {
+      display: none;
+      padding: 14px;
+      border-radius: 8px;
+      margin-bottom: 18px;
+      font-size: 14px;
+      font-weight: bold;
+    }
+
+    .form-message.success {
+      display: block;
+      background: #e6f7ec;
+      color: #1e7e34;
+      border: 1px solid #b7e4c7;
+    }
+
+    .form-message.error {
+      display: block;
+      background: #fdecea;
+      color: #c0392b;
+      border: 1px solid #f5c6cb;
+    }
+
     .form-group {
       margin-bottom: 18px;
     }
@@ -116,6 +139,11 @@
 
     .login-btn:hover {
       background: #1d5d8f;
+    }
+
+    .login-btn:disabled {
+      background: #9aa8b5;
+      cursor: not-allowed;
     }
 
     .forgot {
@@ -160,13 +188,16 @@
       🔒 This area is restricted to authorized school administrators only.
     </div>
 
-    <form>
+    <div id="formMessage" class="form-message"></div>
+
+    <form id="adminLoginForm" novalidate>
 
       <div class="form-group">
         <label>Administrator Email</label>
 
         <input
           type="email"
+          id="email"
           placeholder="Enter administrator email"
           required
         >
@@ -177,12 +208,13 @@
 
         <input
           type="password"
+          id="password"
           placeholder="Enter password"
           required
         >
       </div>
 
-      <button type="submit" class="login-btn">
+      <button type="submit" class="login-btn" id="loginBtn">
         SECURE LOGIN
       </button>
 
@@ -197,6 +229,83 @@
     </div>
 
   </div>
+
+  <!-- Supabase JS SDK (must load before supabase-config.js) -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase-config.js"></script>
+
+  <script>
+    const form = document.getElementById("adminLoginForm");
+    const loginBtn = document.getElementById("loginBtn");
+    const formMessage = document.getElementById("formMessage");
+
+    function showFormMessage(type, text) {
+      formMessage.className = "form-message " + type;
+      formMessage.textContent = text;
+    }
+
+    function clearFormMessage() {
+      formMessage.className = "form-message";
+      formMessage.textContent = "";
+    }
+
+    form.addEventListener("submit", async function (e) {
+      e.preventDefault();
+      clearFormMessage();
+
+      const email = document.getElementById("email").value.trim();
+      const password = document.getElementById("password").value;
+
+      if (!email || !password) {
+        showFormMessage("error", "Please enter both your email and password.");
+        return;
+      }
+
+      loginBtn.disabled = true;
+      loginBtn.textContent = "VERIFYING...";
+
+      try {
+        const { data, error } = await supabaseClient.auth.signInWithPassword({
+          email,
+          password
+        });
+
+        if (error) {
+          if (error.message.toLowerCase().includes("invalid login credentials")) {
+            showFormMessage("error", "Incorrect email or password. Please try again.");
+          } else {
+            showFormMessage("error", error.message);
+          }
+          return;
+        }
+
+        // Confirm this account is a registered administrator
+        const { data: adminRow, error: adminError } = await supabaseClient
+          .from("admins")
+          .select("id")
+          .eq("user_id", data.user.id)
+          .single();
+
+        if (adminError || !adminRow) {
+          showFormMessage("error", "This account is not authorized as an administrator.");
+          await supabaseClient.auth.signOut();
+          return;
+        }
+
+        showFormMessage("success", "Access granted. Redirecting to dashboard...");
+
+        setTimeout(function () {
+          window.location.href = "admin-dashboard.html";
+        }, 1200);
+
+      } catch (err) {
+        showFormMessage("error", "Something went wrong: " + err.message);
+      } finally {
+        loginBtn.disabled = false;
+        loginBtn.textContent = "SECURE LOGIN";
+      }
+    });
+  </script>
 
 </body>
 </html>
