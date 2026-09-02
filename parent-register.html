@@ -100,6 +100,46 @@
       border-color: #1d5d8f;
     }
 
+    .field-error {
+      color: #c0392b;
+      font-size: 13px;
+      margin-top: 6px;
+      display: none;
+    }
+
+    .form-group.has-error input,
+    .form-group.has-error select,
+    .form-group.has-error textarea {
+      border-color: #c0392b;
+    }
+
+    .form-group.has-error .field-error {
+      display: block;
+    }
+
+    .form-message {
+      display: none;
+      padding: 14px;
+      border-radius: 8px;
+      margin-bottom: 18px;
+      font-size: 14px;
+      font-weight: bold;
+    }
+
+    .form-message.success {
+      display: block;
+      background: #e6f7ec;
+      color: #1e7e34;
+      border: 1px solid #b7e4c7;
+    }
+
+    .form-message.error {
+      display: block;
+      background: #fdecea;
+      color: #c0392b;
+      border: 1px solid #f5c6cb;
+    }
+
     .register-btn {
       width: 100%;
       padding: 15px;
@@ -115,6 +155,11 @@
 
     .register-btn:hover {
       background: #1d5d8f;
+    }
+
+    .register-btn:disabled {
+      background: #9aa8b5;
+      cursor: not-allowed;
     }
 
     .login-link {
@@ -165,53 +210,60 @@
       </p>
     </div>
 
-    <form>
+    <div id="formMessage" class="form-message"></div>
+
+    <form id="parentRegisterForm" novalidate>
 
       <h2>Parent / Guardian Information</h2>
 
-      <div class="form-group">
+      <div class="form-group" id="group-fullName">
         <label>Full Name</label>
-        <input type="text" placeholder="Enter full name" required>
+        <input type="text" id="fullName" placeholder="Enter full name" required>
+        <div class="field-error">Please enter your full name.</div>
       </div>
 
-      <div class="form-group">
+      <div class="form-group" id="group-relationship">
         <label>Relationship to Student</label>
 
-        <select required>
+        <select id="relationship" required>
           <option value="">Select Relationship</option>
           <option>Father</option>
           <option>Mother</option>
           <option>Guardian</option>
           <option>Other</option>
         </select>
+        <div class="field-error">Please select your relationship to the student.</div>
       </div>
 
-      <div class="form-group">
+      <div class="form-group" id="group-phone">
         <label>Phone Number</label>
-        <input type="tel" placeholder="Enter phone number" required>
+        <input type="tel" id="phone" placeholder="Enter phone number" required>
+        <div class="field-error">Please enter a phone number.</div>
       </div>
 
-      <div class="form-group">
+      <div class="form-group" id="group-email">
         <label>Email Address</label>
-        <input type="email" placeholder="Enter email address" required>
+        <input type="email" id="email" placeholder="Enter email address" required>
+        <div class="field-error">Please enter a valid email address.</div>
       </div>
 
-      <div class="form-group">
+      <div class="form-group" id="group-address">
         <label>Home Address (Optional)</label>
-        <textarea placeholder="Enter home address"></textarea>
+        <textarea id="address" placeholder="Enter home address"></textarea>
       </div>
 
       <h2>Student Information</h2>
 
-      <div class="form-group">
+      <div class="form-group" id="group-childName">
         <label>Student Full Name</label>
-        <input type="text" placeholder="Enter student's full name" required>
+        <input type="text" id="childName" placeholder="Enter student's full name" required>
+        <div class="field-error">Please enter the student's full name.</div>
       </div>
 
-      <div class="form-group">
+      <div class="form-group" id="group-childClass">
         <label>Student Class</label>
 
-        <select required>
+        <select id="childClass" required>
           <option value="">Select Student Class</option>
           <option>JSS 1</option>
           <option>JSS 2</option>
@@ -220,6 +272,7 @@
           <option>SS 2</option>
           <option>SS 3</option>
         </select>
+        <div class="field-error">Please select the student's class.</div>
       </div>
 
       <div class="note">
@@ -229,17 +282,19 @@
 
       <h2>Account Information</h2>
 
-      <div class="form-group">
+      <div class="form-group" id="group-password">
         <label>Create Password</label>
-        <input type="password" placeholder="Create password" required>
+        <input type="password" id="password" placeholder="Create password" required>
+        <div class="field-error">Password must be at least 6 characters.</div>
       </div>
 
-      <div class="form-group">
+      <div class="form-group" id="group-confirmPassword">
         <label>Confirm Password</label>
-        <input type="password" placeholder="Confirm password" required>
+        <input type="password" id="confirmPassword" placeholder="Confirm password" required>
+        <div class="field-error">Passwords do not match.</div>
       </div>
 
-      <button type="submit" class="register-btn">
+      <button type="submit" class="register-btn" id="registerBtn">
         CREATE PARENT ACCOUNT
       </button>
 
@@ -262,6 +317,118 @@
     </div>
 
   </div>
+
+  <!-- Supabase JS SDK (must load before supabase-config.js) -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase-config.js"></script>
+
+  <script>
+    const form = document.getElementById("parentRegisterForm");
+    const registerBtn = document.getElementById("registerBtn");
+    const formMessage = document.getElementById("formMessage");
+
+    function clearErrors() {
+      document.querySelectorAll(".form-group").forEach(group => {
+        group.classList.remove("has-error");
+      });
+      formMessage.className = "form-message";
+      formMessage.textContent = "";
+    }
+
+    function showFieldError(groupId) {
+      document.getElementById(groupId).classList.add("has-error");
+    }
+
+    function showFormMessage(type, text) {
+      formMessage.className = "form-message " + type;
+      formMessage.textContent = text;
+    }
+
+    form.addEventListener("submit", async function (e) {
+      e.preventDefault();
+      clearErrors();
+
+      const fullName = document.getElementById("fullName").value.trim();
+      const relationship = document.getElementById("relationship").value;
+      const phone = document.getElementById("phone").value.trim();
+      const email = document.getElementById("email").value.trim();
+      const address = document.getElementById("address").value.trim();
+      const childName = document.getElementById("childName").value.trim();
+      const childClass = document.getElementById("childClass").value;
+      const password = document.getElementById("password").value;
+      const confirmPassword = document.getElementById("confirmPassword").value;
+
+      let hasError = false;
+
+      if (!fullName) { showFieldError("group-fullName"); hasError = true; }
+      if (!relationship) { showFieldError("group-relationship"); hasError = true; }
+      if (!phone) { showFieldError("group-phone"); hasError = true; }
+      if (!email) { showFieldError("group-email"); hasError = true; }
+      if (!childName) { showFieldError("group-childName"); hasError = true; }
+      if (!childClass) { showFieldError("group-childClass"); hasError = true; }
+      if (!password || password.length < 6) { showFieldError("group-password"); hasError = true; }
+      if (password !== confirmPassword) { showFieldError("group-confirmPassword"); hasError = true; }
+
+      if (hasError) {
+        showFormMessage("error", "Please fix the highlighted fields below.");
+        return;
+      }
+
+      registerBtn.disabled = true;
+      registerBtn.textContent = "CREATING ACCOUNT...";
+
+      try {
+        const { data: signUpData, error: signUpError } =
+          await supabaseClient.auth.signUp({ email, password });
+
+        if (signUpError) {
+          showFormMessage("error", signUpError.message);
+          return;
+        }
+
+        const user = signUpData.user;
+
+        if (!user) {
+          showFormMessage(
+            "error",
+            "Account created, but no active session was returned. Check that 'Confirm email' is turned off in Supabase Auth settings."
+          );
+          return;
+        }
+
+        const { error: insertError } = await supabaseClient
+          .from("parents")
+          .insert([{
+            user_id: user.id,
+            full_name: fullName,
+            relationship: relationship,
+            phone_number: phone,
+            email: email,
+            home_address: address || null,
+            child_full_name: childName,
+            child_class: childClass
+          }]);
+
+        if (insertError) {
+          showFormMessage("error", "Account created, but saving your details failed: " + insertError.message);
+          return;
+        }
+
+        showFormMessage("success", "Account created successfully! Redirecting to login...");
+        form.reset();
+
+        setTimeout(function () {
+          window.location.href = "parent-login.html";
+        }, 1800);
+
+      } catch (err) {
+        showFormMessage("error", "Something went wrong: " + err.message);
+      } finally {
+        registerBtn.disabled = false;
+        registerBtn.textContent = "CREATE PARENT ACCOUNT";
+      }
+    });
+  </script>
 
 </body>
 </html>
