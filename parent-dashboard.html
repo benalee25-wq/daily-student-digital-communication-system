@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <title>Parent Dashboard | Daily Student Digital Communication System</title>
+  <title>Admin Dashboard | Daily Student Digital Communication System</title>
 
   <style>
     * {
@@ -26,7 +26,7 @@
     }
 
     .header-content {
-      max-width: 1100px;
+      max-width: 1200px;
       margin: auto;
       display: flex;
       justify-content: space-between;
@@ -51,7 +51,7 @@
     }
 
     .container {
-      max-width: 1100px;
+      max-width: 1200px;
       margin: auto;
       padding: 25px 18px;
     }
@@ -62,7 +62,7 @@
 
     .welcome h1 {
       color: #12355b;
-      font-size: 26px;
+      font-size: 27px;
       margin-bottom: 8px;
     }
 
@@ -70,81 +70,52 @@
       color: #666;
     }
 
-    .link-warning {
-      background: #fff3cd;
-      color: #856404;
-      padding: 14px 16px;
-      border-radius: 10px;
-      margin-bottom: 22px;
-      font-size: 14px;
-      line-height: 1.5;
+    /* STATISTICS */
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 18px;
+      margin-bottom: 30px;
     }
 
-    .child-card {
+    .stat-card {
       background: white;
       padding: 22px;
       border-radius: 12px;
-      margin-bottom: 25px;
-      box-shadow: 0 4px 15px rgba(0,0,0,0.07);
+      box-shadow: 0 4px 15px rgba(0,0,0,0.08);
     }
 
-    .child-card label {
-      display: block;
-      font-weight: bold;
-      margin-bottom: 6px;
-      color: #12355b;
-      font-size: 13px;
-      text-transform: uppercase;
+    .stat-icon {
+      font-size: 30px;
+      margin-bottom: 10px;
     }
 
-    .child-card .child-name {
-      font-size: 20px;
-      color: #222;
-      margin-bottom: 4px;
-    }
-
-    .child-card .child-class {
+    .stat-card h3 {
       color: #666;
       font-size: 14px;
+      margin-bottom: 8px;
     }
 
-    .report-status {
-      background: white;
-      border-radius: 14px;
-      padding: 25px;
-      box-shadow: 0 4px 15px rgba(0,0,0,0.08);
-      margin-bottom: 25px;
-    }
-
-    .report-status h2 {
+    .stat-number {
       color: #12355b;
-      margin-bottom: 15px;
-      font-size: 20px;
+      font-size: 28px;
+      font-weight: bold;
     }
 
-    .status {
-      background: #e8f5e9;
-      color: #2e7d32;
-      padding: 14px;
-      border-radius: 8px;
-      font-weight: bold;
+    /* MANAGEMENT SECTION */
+
+    .section-title {
+      color: #12355b;
+      font-size: 22px;
       margin-bottom: 18px;
-    }
-
-    .view-btn {
-      display: inline-block;
-      background: #12355b;
-      color: white;
-      padding: 13px 20px;
-      border-radius: 8px;
-      text-decoration: none;
-      font-weight: bold;
     }
 
     .dashboard-grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
       gap: 18px;
+      margin-bottom: 30px;
     }
 
     .dashboard-card {
@@ -189,16 +160,16 @@
 
     footer {
       text-align: center;
-      padding: 25px 15px;
+      padding: 30px 15px;
       color: #777;
       font-size: 13px;
-      margin-top: 30px;
     }
 
     @media (max-width: 600px) {
       .header-content {
         flex-direction: column;
         gap: 15px;
+        text-align: center;
       }
 
       .welcome h1 {
@@ -210,18 +181,25 @@
 
 <body>
 
+  <!-- Shown briefly while we check login + admin status -->
   <div id="loadingScreen" class="loading-screen">
-    Loading your dashboard...
+    Verifying administrator access...
   </div>
 
+  <!-- Real dashboard, hidden until verified -->
   <div id="dashboardContent" style="display:none;">
 
     <header>
       <div class="header-content">
+
         <div class="logo">
           DAILY STUDENT DIGITAL COMMUNICATION SYSTEM
         </div>
-        <button class="logout" id="logoutBtn">Logout</button>
+
+        <button class="logout" id="logoutBtn">
+          Logout
+        </button>
+
       </div>
     </header>
 
@@ -229,73 +207,111 @@
     <main class="container">
 
       <section class="welcome">
-        <h1 id="welcomeHeading">Welcome, Parent / Guardian 👋</h1>
-        <p>Stay connected with your child's daily school experience.</p>
-      </section>
 
-      <!-- Shown only if the school hasn't linked this account to a student yet -->
-      <div id="linkWarning" class="link-warning" style="display:none;">
-        ⚠️ Your account hasn't been connected to your child's official student record yet.
-        The school administrator will complete this shortly. In the meantime, the details
-        below are what you entered at registration.
-      </div>
+        <h1>Administrator Dashboard 🏫</h1>
 
-      <section class="child-card">
-        <label>My Child</label>
-        <div class="child-name" id="childName">—</div>
-        <div class="child-class" id="childClass">—</div>
+        <p>
+          Manage students, parents and daily communication activities.
+        </p>
+
       </section>
 
 
-      <section class="report-status">
-        <h2>Today's Daily Report</h2>
-        <div class="status">✓ Daily Report Available</div>
-        <a href="parent-reports.html" class="view-btn">VIEW TODAY'S REPORT</a>
+      <!-- STATISTICS -->
+
+      <section class="stats-grid">
+
+        <div class="stat-card">
+          <div class="stat-icon">🎓</div>
+          <h3>Total Students</h3>
+          <div class="stat-number" id="studentCount">0</div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-icon">👨‍👩‍👧</div>
+          <h3>Total Parents</h3>
+          <div class="stat-number" id="parentCount">0</div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-icon">📝</div>
+          <h3>Reports Submitted Today</h3>
+          <div class="stat-number">0</div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-icon">⏳</div>
+          <h3>Reports Not Submitted</h3>
+          <div class="stat-number">0</div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-icon">💬</div>
+          <h3>Parent Concerns</h3>
+          <div class="stat-number">0</div>
+        </div>
+
       </section>
 
+
+      <!-- MANAGEMENT -->
+
+      <h2 class="section-title">System Management</h2>
 
       <section class="dashboard-grid">
 
-        <a href="parent-reports.html" class="dashboard-card">
-          <div class="icon">📅</div>
+        <a href="#" class="dashboard-card">
+          <div class="icon">🎓</div>
+          <h3>Students</h3>
+          <p>Register and manage student accounts.</p>
+        </a>
+
+        <a href="#" class="dashboard-card">
+          <div class="icon">👨‍👩‍👧</div>
+          <h3>Parents / Guardians</h3>
+          <p>Manage parent and guardian accounts.</p>
+        </a>
+
+        <a href="admin-connections.html" class="dashboard-card">
+          <div class="icon">🔗</div>
+          <h3>Student-Parent Connections</h3>
+          <p>Connect students securely with parents.</p>
+        </a>
+
+        <a href="admin-reports.html" class="dashboard-card">
+          <div class="icon">📝</div>
           <h3>Daily Reports</h3>
-          <p>View your child's reports by date.</p>
+          <p>View and search submitted daily reports.</p>
         </a>
 
         <a href="#" class="dashboard-card">
           <div class="icon">📚</div>
           <h3>Assignments</h3>
-          <p>Monitor assignments and submission deadlines.</p>
+          <p>Monitor student assignments and deadlines.</p>
         </a>
 
         <a href="#" class="dashboard-card">
           <div class="icon">💡</div>
           <h3>Learning Challenges</h3>
-          <p>View topics your child does not understand.</p>
+          <p>Identify students experiencing learning difficulties.</p>
         </a>
 
         <a href="#" class="dashboard-card">
           <div class="icon">📊</div>
-          <h3>Classwork Scores</h3>
-          <p>Review classwork records and scores.</p>
-        </a>
-
-        <a href="#" class="dashboard-card">
-          <div class="icon">⚠️</div>
-          <h3>Unusual Incidents</h3>
-          <p>View unusual events reported by your child.</p>
+          <h3>Classwork Records</h3>
+          <p>Review classwork scores and performance records.</p>
         </a>
 
         <a href="#" class="dashboard-card">
           <div class="icon">💬</div>
-          <h3>My Responses</h3>
-          <p>View comments and concerns submitted to the school.</p>
+          <h3>Parent Concerns</h3>
+          <p>View and respond to parent concerns.</p>
         </a>
 
         <a href="#" class="dashboard-card">
           <div class="icon">🔔</div>
           <h3>Notifications</h3>
-          <p>View important updates and notifications.</p>
+          <p>Monitor system notifications and delivery status.</p>
         </a>
 
       </section>
@@ -319,48 +335,41 @@
     const dashboardContent = document.getElementById("dashboardContent");
 
     async function loadDashboard() {
+      // 1. Check if anyone is logged in at all
       const { data: sessionData } = await supabaseClient.auth.getSession();
       const session = sessionData.session;
 
       if (!session) {
-        window.location.href = "parent-login.html";
+        window.location.href = "admin-login.html";
         return;
       }
 
-      const { data: parent, error } = await supabaseClient
-        .from("parents")
-        .select("full_name, relationship, child_full_name, child_class, linked_student_id")
+      // 2. Confirm this logged-in user is actually an admin
+      const { data: adminRow, error: adminError } = await supabaseClient
+        .from("admins")
+        .select("id")
         .eq("user_id", session.user.id)
         .single();
 
-      if (error || !parent) {
+      if (adminError || !adminRow) {
         await supabaseClient.auth.signOut();
-        window.location.href = "parent-login.html";
+        window.location.href = "admin-login.html";
         return;
       }
 
-      const firstName = parent.full_name.split(" ")[0];
-      document.getElementById("welcomeHeading").textContent = "Welcome, " + firstName + " 👋";
+      // 3. Load live counts (RLS lets admins see all rows in these tables)
+      const { count: studentCount } = await supabaseClient
+        .from("students")
+        .select("*", { count: "exact", head: true });
 
-      if (parent.linked_student_id) {
-        // Officially linked — pull the REAL student record
-        const { data: student } = await supabaseClient
-          .from("students")
-          .select("full_name, class")
-          .eq("id", parent.linked_student_id)
-          .single();
+      const { count: parentCount } = await supabaseClient
+        .from("parents")
+        .select("*", { count: "exact", head: true });
 
-        if (student) {
-          document.getElementById("childName").textContent = student.full_name;
-          document.getElementById("childClass").textContent = student.class;
-        }
-      } else {
-        // Not linked yet — fall back to what the parent typed at registration
-        document.getElementById("linkWarning").style.display = "block";
-        document.getElementById("childName").textContent = parent.child_full_name;
-        document.getElementById("childClass").textContent = parent.child_class;
-      }
+      document.getElementById("studentCount").textContent = studentCount ?? 0;
+      document.getElementById("parentCount").textContent = parentCount ?? 0;
 
+      // 4. Reveal the dashboard
       loadingScreen.style.display = "none";
       dashboardContent.style.display = "block";
     }
