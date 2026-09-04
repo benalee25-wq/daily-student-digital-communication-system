@@ -1,1 +1,281 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
+  <title>Manage Parents | Daily Student Digital Communication System</title>
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: Arial, sans-serif;
+    }
+
+    body {
+      background: #f4f7fb;
+      color: #333;
+    }
+
+    header {
+      background: #12355b;
+      color: white;
+      padding: 18px 20px;
+    }
+
+    .header-content {
+      max-width: 900px;
+      margin: auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .logo {
+      font-size: 16px;
+      font-weight: bold;
+    }
+
+    .back-link {
+      color: white;
+      text-decoration: none;
+      font-size: 14px;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: auto;
+      padding: 25px 18px;
+    }
+
+    h1 {
+      color: #12355b;
+      font-size: 24px;
+      margin-bottom: 8px;
+    }
+
+    .subtitle {
+      color: #666;
+      margin-bottom: 20px;
+    }
+
+    .search-box {
+      width: 100%;
+      padding: 13px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      font-size: 15px;
+      margin-bottom: 20px;
+      background: white;
+    }
+
+    .person-card {
+      background: white;
+      border-radius: 12px;
+      padding: 18px 20px;
+      margin-bottom: 12px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.07);
+    }
+
+    .person-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 8px;
+    }
+
+    .person-name {
+      color: #12355b;
+      font-weight: bold;
+      font-size: 17px;
+    }
+
+    .link-badge {
+      display: inline-block;
+      padding: 4px 9px;
+      border-radius: 6px;
+      font-size: 11px;
+      font-weight: bold;
+    }
+
+    .link-badge.linked {
+      background: #e6f7ec;
+      color: #1e7e34;
+    }
+
+    .link-badge.unlinked {
+      background: #fff3cd;
+      color: #856404;
+    }
+
+    .person-detail-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px 16px;
+      font-size: 13px;
+      color: #666;
+    }
+
+    .loading-screen {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #12355b;
+      font-weight: bold;
+    }
+
+    .empty-state {
+      background: white;
+      padding: 30px;
+      border-radius: 12px;
+      text-align: center;
+      color: #777;
+    }
+
+    .result-count {
+      color: #777;
+      font-size: 13px;
+      margin-bottom: 12px;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div id="loadingScreen" class="loading-screen">
+    Loading parents...
+  </div>
+
+  <div id="pageContent" style="display:none;">
+
+    <header>
+      <div class="header-content">
+        <div class="logo">DAILY STUDENT DIGITAL COMMUNICATION SYSTEM</div>
+        <a href="admin-dashboard.html" class="back-link">← Back to Dashboard</a>
+      </div>
+    </header>
+
+    <main class="container">
+
+      <h1>Manage Parents / Guardians</h1>
+      <p class="subtitle">All registered parent/guardian accounts.</p>
+
+      <input type="text" id="searchBox" class="search-box" placeholder="Search by name, email or child's name...">
+
+      <div class="result-count" id="resultCount"></div>
+
+      <div id="parentsList"></div>
+
+    </main>
+
+  </div>
+
+  <!-- Supabase JS SDK (must load before supabase-config.js) -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase-config.js"></script>
+
+  <script>
+    const loadingScreen = document.getElementById("loadingScreen");
+    const pageContent = document.getElementById("pageContent");
+    const parentsList = document.getElementById("parentsList");
+    const searchBox = document.getElementById("searchBox");
+    const resultCount = document.getElementById("resultCount");
+
+    let allParents = [];
+
+    function renderParents(parents) {
+      resultCount.textContent = parents.length + (parents.length === 1 ? " parent" : " parents");
+
+      if (parents.length === 0) {
+        parentsList.innerHTML = '<div class="empty-state">No parents found.</div>';
+        return;
+      }
+
+      parentsList.innerHTML = "";
+
+      parents.forEach(function (parent) {
+        const isLinked = !!parent.linked_student_id;
+        const card = document.createElement("div");
+        card.className = "person-card";
+
+        card.innerHTML = `
+          <div class="person-top">
+            <div class="person-name">${parent.full_name}</div>
+            <div class="link-badge ${isLinked ? 'linked' : 'unlinked'}">
+              ${isLinked ? '✓ LINKED' : '⚠ NOT LINKED'}
+            </div>
+          </div>
+          <div class="person-detail-row">
+            <span>👪 ${parent.relationship}</span>
+            <span>📞 ${parent.phone_number}</span>
+            <span>✉️ ${parent.email}</span>
+            <span>🎓 Child: ${parent.child_full_name} (${parent.child_class})</span>
+          </div>
+        `;
+
+        parentsList.appendChild(card);
+      });
+    }
+
+    async function init() {
+      const { data: sessionData } = await supabaseClient.auth.getSession();
+      const session = sessionData.session;
+
+      if (!session) {
+        window.location.href = "admin-login.html";
+        return;
+      }
+
+      const { data: adminRow, error: adminError } = await supabaseClient
+        .from("admins")
+        .select("id")
+        .eq("user_id", session.user.id)
+        .single();
+
+      if (adminError || !adminRow) {
+        await supabaseClient.auth.signOut();
+        window.location.href = "admin-login.html";
+        return;
+      }
+
+      const { data: parents } = await supabaseClient
+        .from("parents")
+        .select("full_name, relationship, phone_number, email, child_full_name, child_class, linked_student_id")
+        .order("full_name");
+
+      allParents = parents || [];
+      renderParents(allParents);
+
+      loadingScreen.style.display = "none";
+      pageContent.style.display = "block";
+    }
+
+    searchBox.addEventListener("input", function () {
+      const query = searchBox.value.trim().toLowerCase();
+
+      if (!query) {
+        renderParents(allParents);
+        return;
+      }
+
+      const filtered = allParents.filter(function (parent) {
+        return (
+          parent.full_name.toLowerCase().includes(query) ||
+          parent.email.toLowerCase().includes(query) ||
+          parent.child_full_name.toLowerCase().includes(query)
+        );
+      });
+
+      renderParents(filtered);
+    });
+
+    init();
+  </script>
+
+</body>
+</html>
