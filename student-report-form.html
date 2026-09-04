@@ -1,1 +1,336 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
+  <title>Complete Today's Report | Daily Student Digital Communication System</title>
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: Arial, sans-serif;
+    }
+
+    body {
+      background: #f4f7fb;
+      color: #333;
+    }
+
+    header {
+      background: #12355b;
+      color: white;
+      padding: 18px 20px;
+    }
+
+    .header-content {
+      max-width: 700px;
+      margin: auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .logo {
+      font-size: 16px;
+      font-weight: bold;
+    }
+
+    .back-link {
+      color: white;
+      text-decoration: none;
+      font-size: 14px;
+    }
+
+    .container {
+      max-width: 700px;
+      margin: auto;
+      padding: 25px 18px;
+    }
+
+    h1 {
+      color: #12355b;
+      font-size: 22px;
+      margin-bottom: 8px;
+    }
+
+    .subtitle {
+      color: #666;
+      margin-bottom: 20px;
+    }
+
+    .form-message {
+      display: none;
+      padding: 14px;
+      border-radius: 8px;
+      margin-bottom: 18px;
+      font-size: 14px;
+      font-weight: bold;
+    }
+
+    .form-message.success {
+      display: block;
+      background: #e6f7ec;
+      color: #1e7e34;
+      border: 1px solid #b7e4c7;
+    }
+
+    .form-message.error {
+      display: block;
+      background: #fdecea;
+      color: #c0392b;
+      border: 1px solid #f5c6cb;
+    }
+
+    .form-message.info {
+      display: block;
+      background: #eef6fb;
+      color: #12355b;
+      border: 1px solid #cfe4f2;
+    }
+
+    .form-card {
+      background: white;
+      border-radius: 14px;
+      padding: 22px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+    }
+
+    .form-group {
+      margin-bottom: 18px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 7px;
+      font-size: 14px;
+      font-weight: bold;
+      color: #444;
+    }
+
+    textarea {
+      width: 100%;
+      padding: 13px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      font-size: 15px;
+      min-height: 90px;
+      resize: vertical;
+      font-family: inherit;
+    }
+
+    textarea:focus {
+      border-color: #1d5d8f;
+      outline: none;
+    }
+
+    .submit-btn {
+      width: 100%;
+      padding: 15px;
+      border: none;
+      background: #12355b;
+      color: white;
+      font-size: 16px;
+      font-weight: bold;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+
+    .submit-btn:hover {
+      background: #1d5d8f;
+    }
+
+    .submit-btn:disabled {
+      background: #9aa8b5;
+      cursor: not-allowed;
+    }
+
+    .loading-screen {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #12355b;
+      font-weight: bold;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div id="loadingScreen" class="loading-screen">
+    Loading...
+  </div>
+
+  <div id="pageContent" style="display:none;">
+
+    <header>
+      <div class="header-content">
+        <div class="logo">DAILY STUDENT CONNECT</div>
+        <a href="student-dashboard.html" class="back-link">← Back</a>
+      </div>
+    </header>
+
+    <main class="container">
+
+      <h1>Today's Daily Report</h1>
+      <p class="subtitle" id="dateLabel"></p>
+
+      <div id="formMessage" class="form-message"></div>
+
+      <div class="form-card">
+
+        <form id="reportForm" novalidate>
+
+          <div class="form-group">
+            <label>Subjects Covered Today</label>
+            <textarea id="subjectsCovered" placeholder="e.g. Mathematics, English, Basic Science"></textarea>
+          </div>
+
+          <div class="form-group">
+            <label>Homework Given</label>
+            <textarea id="homeworkGiven" placeholder="List any homework or assignments given today"></textarea>
+          </div>
+
+          <div class="form-group">
+            <label>Classwork Summary</label>
+            <textarea id="classworkSummary" placeholder="Briefly describe classwork done today"></textarea>
+          </div>
+
+          <div class="form-group">
+            <label>How I Felt / Behaviour Notes</label>
+            <textarea id="behaviorNotes" placeholder="How was your day? Anything you want your parent to know?"></textarea>
+          </div>
+
+          <div class="form-group">
+            <label>Unusual Incident (Optional)</label>
+            <textarea id="unusualIncident" placeholder="Only fill this in if something unusual happened today"></textarea>
+          </div>
+
+          <button type="submit" class="submit-btn" id="submitBtn">
+            SUBMIT TODAY'S REPORT
+          </button>
+
+        </form>
+
+      </div>
+
+    </main>
+
+  </div>
+
+  <!-- Supabase JS SDK (must load before supabase-config.js) -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase-config.js"></script>
+
+  <script>
+    const loadingScreen = document.getElementById("loadingScreen");
+    const pageContent = document.getElementById("pageContent");
+    const form = document.getElementById("reportForm");
+    const submitBtn = document.getElementById("submitBtn");
+    const formMessage = document.getElementById("formMessage");
+    const dateLabel = document.getElementById("dateLabel");
+
+    let currentStudentId = null;
+
+    function showFormMessage(type, text) {
+      formMessage.className = "form-message " + type;
+      formMessage.textContent = text;
+    }
+
+    function todayDateString() {
+      const d = new Date();
+      const year = d.getFullYear();
+      const month = String(d.getMonth() + 1).padStart(2, "0");
+      const day = String(d.getDate()).padStart(2, "0");
+      return year + "-" + month + "-" + day;
+    }
+
+    async function init() {
+      const { data: sessionData } = await supabaseClient.auth.getSession();
+      const session = sessionData.session;
+
+      if (!session) {
+        window.location.href = "student-login.html";
+        return;
+      }
+
+      const { data: student, error } = await supabaseClient
+        .from("students")
+        .select("id, full_name")
+        .eq("user_id", session.user.id)
+        .single();
+
+      if (error || !student) {
+        await supabaseClient.auth.signOut();
+        window.location.href = "student-login.html";
+        return;
+      }
+
+      currentStudentId = student.id;
+
+      const todayStr = todayDateString();
+      dateLabel.textContent = "Today's date: " + todayStr;
+
+      // Check if a report already exists for today
+      const { data: existingReport } = await supabaseClient
+        .from("reports")
+        .select("id")
+        .eq("student_id", currentStudentId)
+        .eq("report_date", todayStr)
+        .maybeSingle();
+
+      if (existingReport) {
+        form.style.display = "none";
+        showFormMessage("info", "You have already submitted today's report. Come back tomorrow!");
+      }
+
+      loadingScreen.style.display = "none";
+      pageContent.style.display = "block";
+    }
+
+    form.addEventListener("submit", async function (e) {
+      e.preventDefault();
+
+      const subjectsCovered = document.getElementById("subjectsCovered").value.trim();
+      const homeworkGiven = document.getElementById("homeworkGiven").value.trim();
+      const classworkSummary = document.getElementById("classworkSummary").value.trim();
+      const behaviorNotes = document.getElementById("behaviorNotes").value.trim();
+      const unusualIncident = document.getElementById("unusualIncident").value.trim();
+
+      submitBtn.disabled = true;
+      submitBtn.textContent = "SUBMITTING...";
+
+      const { error } = await supabaseClient
+        .from("reports")
+        .insert([{
+          student_id: currentStudentId,
+          report_date: todayDateString(),
+          subjects_covered: subjectsCovered || null,
+          homework_given: homeworkGiven || null,
+          classwork_summary: classworkSummary || null,
+          behavior_notes: behaviorNotes || null,
+          unusual_incident: unusualIncident || null
+        }]);
+
+      if (error) {
+        showFormMessage("error", "Failed to submit: " + error.message);
+        submitBtn.disabled = false;
+        submitBtn.textContent = "SUBMIT TODAY'S REPORT";
+        return;
+      }
+
+      showFormMessage("success", "Report submitted successfully! Redirecting...");
+
+      setTimeout(function () {
+        window.location.href = "student-dashboard.html";
+      }, 1500);
+    });
+
+    init();
+  </script>
+
+</body>
+</html>
