@@ -19,7 +19,6 @@
       color: #333;
     }
 
-    /* HEADER */
     header {
       background: #12355b;
       color: white;
@@ -51,7 +50,6 @@
       cursor: pointer;
     }
 
-    /* MAIN */
     .container {
       max-width: 1100px;
       margin: auto;
@@ -72,7 +70,6 @@
       color: #666;
     }
 
-    /* PROFILE CARD */
     .profile-card {
       background: white;
       border-radius: 14px;
@@ -107,7 +104,6 @@
       color: #222;
     }
 
-    /* STATUS CARD */
     .status-card {
       background: white;
       border-radius: 14px;
@@ -123,12 +119,20 @@
     }
 
     .status {
-      background: #fff3cd;
-      color: #856404;
       padding: 14px;
       border-radius: 8px;
       font-weight: bold;
       margin-bottom: 20px;
+    }
+
+    .status.not-submitted {
+      background: #fff3cd;
+      color: #856404;
+    }
+
+    .status.submitted {
+      background: #e6f7ec;
+      color: #1e7e34;
     }
 
     .complete-btn {
@@ -141,7 +145,11 @@
       font-weight: bold;
     }
 
-    /* DASHBOARD GRID */
+    .complete-btn.disabled {
+      background: #9aa8b5;
+      pointer-events: none;
+    }
+
     .dashboard-grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
@@ -178,7 +186,6 @@
       line-height: 1.5;
     }
 
-    /* LOADING STATE */
     .loading-screen {
       min-height: 100vh;
       display: flex;
@@ -189,7 +196,6 @@
       font-size: 16px;
     }
 
-    /* FOOTER */
     footer {
       text-align: center;
       padding: 25px 15px;
@@ -198,7 +204,6 @@
       margin-top: 30px;
     }
 
-    /* MOBILE */
     @media (max-width: 600px) {
       .header-content {
         flex-direction: column;
@@ -219,12 +224,10 @@
 
 <body>
 
-  <!-- Shown briefly while we check login + load student data -->
   <div id="loadingScreen" class="loading-screen">
     Loading your dashboard...
   </div>
 
-  <!-- Real dashboard, hidden until data is ready -->
   <div id="dashboardContent" style="display:none;">
 
     <header>
@@ -250,8 +253,6 @@
         </p>
       </section>
 
-
-      <!-- PROFILE -->
 
       <section class="profile-card">
 
@@ -289,24 +290,20 @@
       </section>
 
 
-      <!-- TODAY'S REPORT STATUS -->
-
       <section class="status-card">
 
         <h2>Today's Daily Report</h2>
 
-        <div class="status">
+        <div class="status not-submitted" id="reportStatus">
           Status: NOT SUBMITTED
         </div>
 
-        <a href="#" class="complete-btn">
+        <a href="student-report-form.html" class="complete-btn" id="completeReportBtn">
           COMPLETE TODAY'S REPORT
         </a>
 
       </section>
 
-
-      <!-- DASHBOARD FEATURES -->
 
       <section class="dashboard-grid">
 
@@ -371,32 +368,35 @@
     const loadingScreen = document.getElementById("loadingScreen");
     const dashboardContent = document.getElementById("dashboardContent");
 
+    function todayDateString() {
+      const d = new Date();
+      const year = d.getFullYear();
+      const month = String(d.getMonth() + 1).padStart(2, "0");
+      const day = String(d.getDate()).padStart(2, "0");
+      return year + "-" + month + "-" + day;
+    }
+
     async function loadDashboard() {
-      // 1. Check if a student is actually logged in
       const { data: sessionData } = await supabaseClient.auth.getSession();
       const session = sessionData.session;
 
       if (!session) {
-        // No active session — send them to login instead
         window.location.href = "student-login.html";
         return;
       }
 
-      // 2. Fetch this student's record
       const { data: student, error } = await supabaseClient
         .from("students")
-        .select("full_name, class, gender, date_of_birth, email")
+        .select("id, full_name, class, gender, date_of_birth, email")
         .eq("user_id", session.user.id)
         .single();
 
       if (error || !student) {
-        // Logged in, but not a registered student — send back to login
         await supabaseClient.auth.signOut();
         window.location.href = "student-login.html";
         return;
       }
 
-      // 3. Fill in the page with real data
       const firstName = student.full_name.split(" ")[0];
       document.getElementById("welcomeHeading").textContent = "Welcome, " + firstName + " 👋";
       document.getElementById("profileName").textContent = student.full_name;
@@ -405,7 +405,27 @@
       document.getElementById("profileDob").textContent = student.date_of_birth;
       document.getElementById("profileEmail").textContent = student.email;
 
-      // 4. Reveal the dashboard
+      // Check today's report status
+      const { data: existingReport } = await supabaseClient
+        .from("reports")
+        .select("id")
+        .eq("student_id", student.id)
+        .eq("report_date", todayDateString())
+        .maybeSingle();
+
+      const statusEl = document.getElementById("reportStatus");
+      const btnEl = document.getElementById("completeReportBtn");
+
+      if (existingReport) {
+        statusEl.className = "status submitted";
+        statusEl.textContent = "Status: SUBMITTED ✓";
+        btnEl.textContent = "VIEW TODAY'S REPORT";
+        btnEl.classList.add("disabled");
+      } else {
+        statusEl.className = "status not-submitted";
+        statusEl.textContent = "Status: NOT SUBMITTED";
+      }
+
       loadingScreen.style.display = "none";
       dashboardContent.style.display = "block";
     }
