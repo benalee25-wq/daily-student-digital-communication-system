@@ -1,1 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
+  <title>Manage Students | Daily Student Digital Communication System</title>
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: Arial, sans-serif;
+    }
+
+    body {
+      background: #f4f7fb;
+      color: #333;
+    }
+
+    header {
+      background: #12355b;
+      color: white;
+      padding: 18px 20px;
+    }
+
+    .header-content {
+      max-width: 900px;
+      margin: auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .logo {
+      font-size: 16px;
+      font-weight: bold;
+    }
+
+    .back-link {
+      color: white;
+      text-decoration: none;
+      font-size: 14px;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: auto;
+      padding: 25px 18px;
+    }
+
+    h1 {
+      color: #12355b;
+      font-size: 24px;
+      margin-bottom: 8px;
+    }
+
+    .subtitle {
+      color: #666;
+      margin-bottom: 20px;
+    }
+
+    .search-box {
+      width: 100%;
+      padding: 13px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      font-size: 15px;
+      margin-bottom: 20px;
+      background: white;
+    }
+
+    .person-card {
+      background: white;
+      border-radius: 12px;
+      padding: 18px 20px;
+      margin-bottom: 12px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.07);
+    }
+
+    .person-name {
+      color: #12355b;
+      font-weight: bold;
+      font-size: 17px;
+      margin-bottom: 6px;
+    }
+
+    .person-detail-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px 16px;
+      font-size: 13px;
+      color: #666;
+    }
+
+    .person-detail-row span {
+      white-space: nowrap;
+    }
+
+    .loading-screen {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #12355b;
+      font-weight: bold;
+    }
+
+    .empty-state {
+      background: white;
+      padding: 30px;
+      border-radius: 12px;
+      text-align: center;
+      color: #777;
+    }
+
+    .result-count {
+      color: #777;
+      font-size: 13px;
+      margin-bottom: 12px;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div id="loadingScreen" class="loading-screen">
+    Loading students...
+  </div>
+
+  <div id="pageContent" style="display:none;">
+
+    <header>
+      <div class="header-content">
+        <div class="logo">DAILY STUDENT DIGITAL COMMUNICATION SYSTEM</div>
+        <a href="admin-dashboard.html" class="back-link">← Back to Dashboard</a>
+      </div>
+    </header>
+
+    <main class="container">
+
+      <h1>Manage Students</h1>
+      <p class="subtitle">All registered student accounts.</p>
+
+      <input type="text" id="searchBox" class="search-box" placeholder="Search by name, class or email...">
+
+      <div class="result-count" id="resultCount"></div>
+
+      <div id="studentsList"></div>
+
+    </main>
+
+  </div>
+
+  <!-- Supabase JS SDK (must load before supabase-config.js) -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase-config.js"></script>
+
+  <script>
+    const loadingScreen = document.getElementById("loadingScreen");
+    const pageContent = document.getElementById("pageContent");
+    const studentsList = document.getElementById("studentsList");
+    const searchBox = document.getElementById("searchBox");
+    const resultCount = document.getElementById("resultCount");
+
+    let allStudents = [];
+
+    function formatDate(dateStr) {
+      if (!dateStr) return "";
+      const d = new Date(dateStr + "T00:00:00");
+      return d.toLocaleDateString(undefined, { year: "numeric", month: "short", day: "numeric" });
+    }
+
+    function renderStudents(students) {
+      resultCount.textContent = students.length + (students.length === 1 ? " student" : " students");
+
+      if (students.length === 0) {
+        studentsList.innerHTML = '<div class="empty-state">No students found.</div>';
+        return;
+      }
+
+      studentsList.innerHTML = "";
+
+      students.forEach(function (student) {
+        const card = document.createElement("div");
+        card.className = "person-card";
+
+        card.innerHTML = `
+          <div class="person-name">${student.full_name}</div>
+          <div class="person-detail-row">
+            <span>🎓 ${student.class}</span>
+            <span>⚧ ${student.gender}</span>
+            <span>🎂 ${formatDate(student.date_of_birth)}</span>
+            <span>✉️ ${student.email}</span>
+          </div>
+        `;
+
+        studentsList.appendChild(card);
+      });
+    }
+
+    async function init() {
+      const { data: sessionData } = await supabaseClient.auth.getSession();
+      const session = sessionData.session;
+
+      if (!session) {
+        window.location.href = "admin-login.html";
+        return;
+      }
+
+      const { data: adminRow, error: adminError } = await supabaseClient
+        .from("admins")
+        .select("id")
+        .eq("user_id", session.user.id)
+        .single();
+
+      if (adminError || !adminRow) {
+        await supabaseClient.auth.signOut();
+        window.location.href = "admin-login.html";
+        return;
+      }
+
+      const { data: students } = await supabaseClient
+        .from("students")
+        .select("full_name, class, gender, date_of_birth, email")
+        .order("full_name");
+
+      allStudents = students || [];
+      renderStudents(allStudents);
+
+      loadingScreen.style.display = "none";
+      pageContent.style.display = "block";
+    }
+
+    searchBox.addEventListener("input", function () {
+      const query = searchBox.value.trim().toLowerCase();
+
+      if (!query) {
+        renderStudents(allStudents);
+        return;
+      }
+
+      const filtered = allStudents.filter(function (student) {
+        return (
+          student.full_name.toLowerCase().includes(query) ||
+          student.class.toLowerCase().includes(query) ||
+          student.email.toLowerCase().includes(query)
+        );
+      });
+
+      renderStudents(filtered);
+    });
+
+    init();
+  </script>
+
+</body>
+</html>
