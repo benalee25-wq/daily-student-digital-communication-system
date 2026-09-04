@@ -70,28 +70,42 @@
       color: #666;
     }
 
-    .child-selector {
+    .link-warning {
+      background: #fff3cd;
+      color: #856404;
+      padding: 14px 16px;
+      border-radius: 10px;
+      margin-bottom: 22px;
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+    .child-card {
       background: white;
-      padding: 20px;
+      padding: 22px;
       border-radius: 12px;
       margin-bottom: 25px;
       box-shadow: 0 4px 15px rgba(0,0,0,0.07);
     }
 
-    .child-selector label {
+    .child-card label {
       display: block;
       font-weight: bold;
-      margin-bottom: 10px;
+      margin-bottom: 6px;
       color: #12355b;
+      font-size: 13px;
+      text-transform: uppercase;
     }
 
-    select {
-      width: 100%;
-      max-width: 400px;
-      padding: 13px;
-      border: 1px solid #ddd;
-      border-radius: 8px;
-      font-size: 16px;
+    .child-card .child-name {
+      font-size: 20px;
+      color: #222;
+      margin-bottom: 4px;
+    }
+
+    .child-card .child-class {
+      color: #666;
+      font-size: 14px;
     }
 
     .report-status {
@@ -196,23 +210,18 @@
 
 <body>
 
-  <!-- Shown briefly while we check login + load parent data -->
   <div id="loadingScreen" class="loading-screen">
     Loading your dashboard...
   </div>
 
-  <!-- Real dashboard, hidden until data is ready -->
   <div id="dashboardContent" style="display:none;">
 
     <header>
       <div class="header-content">
-
         <div class="logo">
           DAILY STUDENT DIGITAL COMMUNICATION SYSTEM
         </div>
-
         <button class="logout" id="logoutBtn">Logout</button>
-
       </div>
     </header>
 
@@ -224,30 +233,24 @@
         <p>Stay connected with your child's daily school experience.</p>
       </section>
 
+      <!-- Shown only if the school hasn't linked this account to a student yet -->
+      <div id="linkWarning" class="link-warning" style="display:none;">
+        ⚠️ Your account hasn't been connected to your child's official student record yet.
+        The school administrator will complete this shortly. In the meantime, the details
+        below are what you entered at registration.
+      </div>
 
-      <section class="child-selector">
-
-        <label>Select Child</label>
-
-        <select id="childSelect">
-          <option value="">Select a Child</option>
-        </select>
-
+      <section class="child-card">
+        <label>My Child</label>
+        <div class="child-name" id="childName">—</div>
+        <div class="child-class" id="childClass">—</div>
       </section>
 
 
       <section class="report-status">
-
         <h2>Today's Daily Report</h2>
-
-        <div class="status">
-          ✓ Daily Report Available
-        </div>
-
-        <a href="#" class="view-btn">
-          VIEW TODAY'S REPORT
-        </a>
-
+        <div class="status">✓ Daily Report Available</div>
+        <a href="#" class="view-btn">VIEW TODAY'S REPORT</a>
       </section>
 
 
@@ -316,7 +319,6 @@
     const dashboardContent = document.getElementById("dashboardContent");
 
     async function loadDashboard() {
-      // 1. Check if a parent is actually logged in
       const { data: sessionData } = await supabaseClient.auth.getSession();
       const session = sessionData.session;
 
@@ -325,10 +327,9 @@
         return;
       }
 
-      // 2. Fetch this parent's record
       const { data: parent, error } = await supabaseClient
         .from("parents")
-        .select("full_name, relationship, child_full_name, child_class")
+        .select("full_name, relationship, child_full_name, child_class, linked_student_id")
         .eq("user_id", session.user.id)
         .single();
 
@@ -338,18 +339,28 @@
         return;
       }
 
-      // 3. Fill in the page with real data
       const firstName = parent.full_name.split(" ")[0];
       document.getElementById("welcomeHeading").textContent = "Welcome, " + firstName + " 👋";
 
-      const childSelect = document.getElementById("childSelect");
-      const option = document.createElement("option");
-      option.textContent = parent.child_full_name + " - " + parent.child_class;
-      option.value = parent.child_full_name;
-      option.selected = true;
-      childSelect.appendChild(option);
+      if (parent.linked_student_id) {
+        // Officially linked — pull the REAL student record
+        const { data: student } = await supabaseClient
+          .from("students")
+          .select("full_name, class")
+          .eq("id", parent.linked_student_id)
+          .single();
 
-      // 4. Reveal the dashboard
+        if (student) {
+          document.getElementById("childName").textContent = student.full_name;
+          document.getElementById("childClass").textContent = student.class;
+        }
+      } else {
+        // Not linked yet — fall back to what the parent typed at registration
+        document.getElementById("linkWarning").style.display = "block";
+        document.getElementById("childName").textContent = parent.child_full_name;
+        document.getElementById("childClass").textContent = parent.child_class;
+      }
+
       loadingScreen.style.display = "none";
       dashboardContent.style.display = "block";
     }
