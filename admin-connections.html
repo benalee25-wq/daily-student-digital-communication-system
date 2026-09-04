@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Student-Parent Connections | Daily Student Digital Communication System</title>
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: Arial, sans-serif;
+    }
+
+    body {
+      background: #f4f7fb;
+      color: #333;
+    }
+
+    header {
+      background: #12355b;
+      color: white;
+      padding: 18px 20px;
+    }
+
+    .header-content {
+      max-width: 1100px;
+      margin: auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .logo {
+      font-size: 18px;
+      font-weight: bold;
+    }
+
+    .back-link {
+      color: white;
+      text-decoration: none;
+      font-size: 14px;
+    }
+
+    .container {
+      max-width: 1100px;
+      margin: auto;
+      padding: 25px 18px;
+    }
+
+    h1 {
+      color: #12355b;
+      font-size: 24px;
+      margin-bottom: 8px;
+    }
+
+    .subtitle {
+      color: #666;
+      margin-bottom: 25px;
+    }
+
+    .form-message {
+      display: none;
+      padding: 14px;
+      border-radius: 8px;
+      margin-bottom: 18px;
+      font-size: 14px;
+      font-weight: bold;
+    }
+
+    .form-message.success {
+      display: block;
+      background: #e6f7ec;
+      color: #1e7e34;
+      border: 1px solid #b7e4c7;
+    }
+
+    .form-message.error {
+      display: block;
+      background: #fdecea;
+      color: #c0392b;
+      border: 1px solid #f5c6cb;
+    }
+
+    .parent-card {
+      background: white;
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 15px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.07);
+    }
+
+    .parent-card h3 {
+      color: #12355b;
+      margin-bottom: 5px;
+    }
+
+    .parent-meta {
+      font-size: 13px;
+      color: #777;
+      margin-bottom: 15px;
+    }
+
+    .link-status {
+      display: inline-block;
+      padding: 5px 10px;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: bold;
+      margin-bottom: 12px;
+    }
+
+    .link-status.linked {
+      background: #e6f7ec;
+      color: #1e7e34;
+    }
+
+    .link-status.unlinked {
+      background: #fff3cd;
+      color: #856404;
+    }
+
+    select {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      font-size: 15px;
+      margin-bottom: 12px;
+    }
+
+    .connect-btn {
+      background: #12355b;
+      color: white;
+      border: none;
+      padding: 11px 18px;
+      border-radius: 8px;
+      font-weight: bold;
+      cursor: pointer;
+      font-size: 14px;
+    }
+
+    .connect-btn:disabled {
+      background: #9aa8b5;
+      cursor: not-allowed;
+    }
+
+    .loading-screen {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #12355b;
+      font-weight: bold;
+    }
+
+    .empty-state {
+      background: white;
+      padding: 30px;
+      border-radius: 12px;
+      text-align: center;
+      color: #777;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div id="loadingScreen" class="loading-screen">
+    Loading...
+  </div>
+
+  <div id="pageContent" style="display:none;">
+
+    <header>
+      <div class="header-content">
+        <div class="logo">DAILY STUDENT DIGITAL COMMUNICATION SYSTEM</div>
+        <a href="admin-dashboard.html" class="back-link">← Back to Dashboard</a>
+      </div>
+    </header>
+
+    <main class="container">
+
+      <h1>Student-Parent Connections</h1>
+      <p class="subtitle">
+        Link each parent/guardian account to their child's actual student account,
+        so parents see their real child's reports and records.
+      </p>
+
+      <div id="formMessage" class="form-message"></div>
+
+      <div id="parentsList"></div>
+
+    </main>
+
+  </div>
+
+  <!-- Supabase JS SDK (must load before supabase-config.js) -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase-config.js"></script>
+
+  <script>
+    const loadingScreen = document.getElementById("loadingScreen");
+    const pageContent = document.getElementById("pageContent");
+    const parentsList = document.getElementById("parentsList");
+    const formMessage = document.getElementById("formMessage");
+
+    function showFormMessage(type, text) {
+      formMessage.className = "form-message " + type;
+      formMessage.textContent = text;
+      setTimeout(() => { formMessage.className = "form-message"; }, 3500);
+    }
+
+    let allStudents = [];
+
+    async function init() {
+      // 1. Confirm admin access
+      const { data: sessionData } = await supabaseClient.auth.getSession();
+      const session = sessionData.session;
+
+      if (!session) {
+        window.location.href = "admin-login.html";
+        return;
+      }
+
+      const { data: adminRow, error: adminError } = await supabaseClient
+        .from("admins")
+        .select("id")
+        .eq("user_id", session.user.id)
+        .single();
+
+      if (adminError || !adminRow) {
+        await supabaseClient.auth.signOut();
+        window.location.href = "admin-login.html";
+        return;
+      }
+
+      // 2. Load all students (for the dropdowns) and all parents
+      const { data: students } = await supabaseClient
+        .from("students")
+        .select("id, full_name, class")
+        .order("full_name");
+
+      const { data: parents } = await supabaseClient
+        .from("parents")
+        .select("id, full_name, email, child_full_name, child_class, linked_student_id")
+        .order("full_name");
+
+      allStudents = students || [];
+
+      renderParents(parents || []);
+
+      loadingScreen.style.display = "none";
+      pageContent.style.display = "block";
+    }
+
+    function renderParents(parents) {
+      if (parents.length === 0) {
+        parentsList.innerHTML = '<div class="empty-state">No parent accounts yet.</div>';
+        return;
+      }
+
+      parentsList.innerHTML = "";
+
+      parents.forEach(function (parent) {
+        const card = document.createElement("div");
+        card.className = "parent-card";
+
+        const isLinked = !!parent.linked_student_id;
+
+        let optionsHtml = '<option value="">-- Select the correct student --</option>';
+        allStudents.forEach(function (student) {
+          const selected = student.id === parent.linked_student_id ? "selected" : "";
+          optionsHtml += `<option value="${student.id}" ${selected}>${student.full_name} - ${student.class}</option>`;
+        });
+
+        card.innerHTML = `
+          <h3>${parent.full_name}</h3>
+          <div class="parent-meta">${parent.email} · Typed in as parent of: ${parent.child_full_name} (${parent.child_class})</div>
+          <div class="link-status ${isLinked ? 'linked' : 'unlinked'}">
+            ${isLinked ? '✓ LINKED' : '⚠ NOT LINKED'}
+          </div>
+          <select data-parent-id="${parent.id}">
+            ${optionsHtml}
+          </select>
+          <button class="connect-btn" data-parent-id="${parent.id}">
+            SAVE CONNECTION
+          </button>
+        `;
+
+        parentsList.appendChild(card);
+      });
+
+      // Wire up all the save buttons
+      document.querySelectorAll(".connect-btn").forEach(function (btn) {
+        btn.addEventListener("click", async function () {
+          const parentId = btn.getAttribute("data-parent-id");
+          const select = document.querySelector(`select[data-parent-id="${parentId}"]`);
+          const studentId = select.value;
+
+          if (!studentId) {
+            showFormMessage("error", "Please select a student first.");
+            return;
+          }
+
+          btn.disabled = true;
+          btn.textContent = "SAVING...";
+
+          const { error } = await supabaseClient
+            .from("parents")
+            .update({ linked_student_id: studentId })
+            .eq("id", parentId);
+
+          btn.disabled = false;
+          btn.textContent = "SAVE CONNECTION";
+
+          if (error) {
+            showFormMessage("error", "Failed to save: " + error.message);
+          } else {
+            showFormMessage("success", "Connection saved successfully!");
+            init(); // refresh the list so the LINKED badge updates
+          }
+        });
+      });
+    }
+
+    init();
+  </script>
+
+</body>
+</html>
