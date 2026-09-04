@@ -1,1 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
+  <title>Daily Reports | Daily Student Digital Communication System</title>
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: Arial, sans-serif;
+    }
+
+    body {
+      background: #f4f7fb;
+      color: #333;
+    }
+
+    header {
+      background: #12355b;
+      color: white;
+      padding: 18px 20px;
+    }
+
+    .header-content {
+      max-width: 800px;
+      margin: auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .logo {
+      font-size: 16px;
+      font-weight: bold;
+    }
+
+    .back-link {
+      color: white;
+      text-decoration: none;
+      font-size: 14px;
+    }
+
+    .container {
+      max-width: 800px;
+      margin: auto;
+      padding: 25px 18px;
+    }
+
+    h1 {
+      color: #12355b;
+      font-size: 24px;
+      margin-bottom: 8px;
+    }
+
+    .subtitle {
+      color: #666;
+      margin-bottom: 22px;
+    }
+
+    .report-card {
+      background: white;
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 15px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.07);
+    }
+
+    .report-date {
+      color: #12355b;
+      font-weight: bold;
+      font-size: 16px;
+      margin-bottom: 12px;
+    }
+
+    .report-field {
+      margin-bottom: 12px;
+    }
+
+    .report-field label {
+      display: block;
+      font-size: 12px;
+      color: #888;
+      font-weight: bold;
+      text-transform: uppercase;
+      margin-bottom: 3px;
+    }
+
+    .report-field p {
+      font-size: 14px;
+      color: #333;
+      line-height: 1.5;
+    }
+
+    .report-field.incident p {
+      color: #c0392b;
+    }
+
+    .loading-screen {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #12355b;
+      font-weight: bold;
+    }
+
+    .empty-state {
+      background: white;
+      padding: 30px;
+      border-radius: 12px;
+      text-align: center;
+      color: #777;
+    }
+
+    .no-link-notice {
+      background: #fff3cd;
+      color: #856404;
+      padding: 16px;
+      border-radius: 10px;
+      font-size: 14px;
+      line-height: 1.5;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div id="loadingScreen" class="loading-screen">
+    Loading reports...
+  </div>
+
+  <div id="pageContent" style="display:none;">
+
+    <header>
+      <div class="header-content">
+        <div class="logo">DAILY STUDENT CONNECT</div>
+        <a href="parent-dashboard.html" class="back-link">← Back to Dashboard</a>
+      </div>
+    </header>
+
+    <main class="container">
+
+      <h1>Daily Reports</h1>
+      <p class="subtitle" id="subtitleText">Reports submitted for your child.</p>
+
+      <div id="reportsList"></div>
+
+    </main>
+
+  </div>
+
+  <!-- Supabase JS SDK (must load before supabase-config.js) -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase-config.js"></script>
+
+  <script>
+    const loadingScreen = document.getElementById("loadingScreen");
+    const pageContent = document.getElementById("pageContent");
+    const reportsList = document.getElementById("reportsList");
+    const subtitleText = document.getElementById("subtitleText");
+
+    function formatDate(dateStr) {
+      const d = new Date(dateStr + "T00:00:00");
+      return d.toLocaleDateString(undefined, { weekday: "long", year: "numeric", month: "long", day: "numeric" });
+    }
+
+    function fieldRow(label, value, isIncident) {
+      if (!value) return "";
+      return `
+        <div class="report-field ${isIncident ? 'incident' : ''}">
+          <label>${label}</label>
+          <p>${value}</p>
+        </div>
+      `;
+    }
+
+    async function init() {
+      const { data: sessionData } = await supabaseClient.auth.getSession();
+      const session = sessionData.session;
+
+      if (!session) {
+        window.location.href = "parent-login.html";
+        return;
+      }
+
+      const { data: parent, error: parentError } = await supabaseClient
+        .from("parents")
+        .select("linked_student_id, child_full_name")
+        .eq("user_id", session.user.id)
+        .single();
+
+      if (parentError || !parent) {
+        await supabaseClient.auth.signOut();
+        window.location.href = "parent-login.html";
+        return;
+      }
+
+      if (!parent.linked_student_id) {
+        reportsList.innerHTML = `
+          <div class="no-link-notice">
+            ⚠️ Your account hasn't been connected to your child's official student
+            record yet, so reports can't be shown here. The school administrator
+            will complete this shortly.
+          </div>
+        `;
+        loadingScreen.style.display = "none";
+        pageContent.style.display = "block";
+        return;
+      }
+
+      const { data: reports, error: reportsError } = await supabaseClient
+        .from("reports")
+        .select("report_date, subjects_covered, homework_given, classwork_summary, behavior_notes, unusual_incident")
+        .eq("student_id", parent.linked_student_id)
+        .order("report_date", { ascending: false });
+
+      if (reportsError || !reports || reports.length === 0) {
+        reportsList.innerHTML = '<div class="empty-state">No reports submitted yet.</div>';
+        loadingScreen.style.display = "none";
+        pageContent.style.display = "block";
+        return;
+      }
+
+      reportsList.innerHTML = "";
+
+      reports.forEach(function (report) {
+        const card = document.createElement("div");
+        card.className = "report-card";
+
+        card.innerHTML = `
+          <div class="report-date">${formatDate(report.report_date)}</div>
+          ${fieldRow("Subjects Covered", report.subjects_covered)}
+          ${fieldRow("Homework Given", report.homework_given)}
+          ${fieldRow("Classwork Summary", report.classwork_summary)}
+          ${fieldRow("Behaviour Notes", report.behavior_notes)}
+          ${fieldRow("Unusual Incident", report.unusual_incident, true)}
+        `;
+
+        reportsList.appendChild(card);
+      });
+
+      loadingScreen.style.display = "none";
+      pageContent.style.display = "block";
+    }
+
+    init();
+  </script>
+
+</body>
+</html>
