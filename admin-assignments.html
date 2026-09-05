@@ -1,1 +1,446 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
+  <title>Manage Assignments | Daily Student Digital Communication System</title>
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: Arial, sans-serif;
+    }
+
+    body {
+      background: #f4f7fb;
+      color: #333;
+    }
+
+    header {
+      background: #12355b;
+      color: white;
+      padding: 18px 20px;
+    }
+
+    .header-content {
+      max-width: 800px;
+      margin: auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .logo {
+      font-size: 16px;
+      font-weight: bold;
+    }
+
+    .back-link {
+      color: white;
+      text-decoration: none;
+      font-size: 14px;
+    }
+
+    .container {
+      max-width: 800px;
+      margin: auto;
+      padding: 25px 18px;
+    }
+
+    h1 {
+      color: #12355b;
+      font-size: 24px;
+      margin-bottom: 8px;
+    }
+
+    .subtitle {
+      color: #666;
+      margin-bottom: 20px;
+    }
+
+    .form-message {
+      display: none;
+      padding: 14px;
+      border-radius: 8px;
+      margin-bottom: 18px;
+      font-size: 14px;
+      font-weight: bold;
+    }
+
+    .form-message.success {
+      display: block;
+      background: #e6f7ec;
+      color: #1e7e34;
+      border: 1px solid #b7e4c7;
+    }
+
+    .form-message.error {
+      display: block;
+      background: #fdecea;
+      color: #c0392b;
+      border: 1px solid #f5c6cb;
+    }
+
+    .form-card {
+      background: white;
+      border-radius: 14px;
+      padding: 22px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+      margin-bottom: 25px;
+    }
+
+    .form-card h2 {
+      color: #12355b;
+      font-size: 18px;
+      margin-bottom: 16px;
+    }
+
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .form-group {
+      margin-bottom: 16px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 6px;
+      font-size: 13px;
+      font-weight: bold;
+      color: #444;
+    }
+
+    input, select, textarea {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      font-size: 15px;
+      font-family: inherit;
+    }
+
+    textarea {
+      min-height: 80px;
+      resize: vertical;
+    }
+
+    input:focus, select:focus, textarea:focus {
+      border-color: #1d5d8f;
+      outline: none;
+    }
+
+    .submit-btn {
+      width: 100%;
+      padding: 14px;
+      border: none;
+      background: #12355b;
+      color: white;
+      font-size: 15px;
+      font-weight: bold;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+
+    .submit-btn:disabled {
+      background: #9aa8b5;
+      cursor: not-allowed;
+    }
+
+    .section-title {
+      color: #12355b;
+      font-size: 20px;
+      margin-bottom: 15px;
+    }
+
+    .assignment-card {
+      background: white;
+      border-radius: 12px;
+      padding: 18px 20px;
+      margin-bottom: 12px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.07);
+    }
+
+    .assignment-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 8px;
+    }
+
+    .assignment-title {
+      color: #12355b;
+      font-weight: bold;
+      font-size: 16px;
+    }
+
+    .assignment-meta {
+      font-size: 12px;
+      color: #777;
+    }
+
+    .assignment-desc {
+      font-size: 14px;
+      color: #333;
+      margin-bottom: 10px;
+      line-height: 1.5;
+    }
+
+    .delete-btn {
+      background: none;
+      border: 1px solid #c0392b;
+      color: #c0392b;
+      padding: 6px 12px;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .loading-screen {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #12355b;
+      font-weight: bold;
+    }
+
+    .empty-state {
+      background: white;
+      padding: 30px;
+      border-radius: 12px;
+      text-align: center;
+      color: #777;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div id="loadingScreen" class="loading-screen">
+    Loading...
+  </div>
+
+  <div id="pageContent" style="display:none;">
+
+    <header>
+      <div class="header-content">
+        <div class="logo">DAILY STUDENT DIGITAL COMMUNICATION SYSTEM</div>
+        <a href="admin-dashboard.html" class="back-link">← Back to Dashboard</a>
+      </div>
+    </header>
+
+    <main class="container">
+
+      <h1>Manage Assignments</h1>
+      <p class="subtitle">Create assignments for a class — every student in that class will see it.</p>
+
+      <div id="formMessage" class="form-message"></div>
+
+      <div class="form-card">
+        <h2>New Assignment</h2>
+
+        <form id="assignmentForm" novalidate>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label>Class</label>
+              <select id="assignClass" required>
+                <option value="">Select Class</option>
+                <option>JSS 1</option>
+                <option>JSS 2</option>
+                <option>JSS 3</option>
+                <option>SS 1</option>
+                <option>SS 2</option>
+                <option>SS 3</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label>Subject</label>
+              <input type="text" id="assignSubject" placeholder="e.g. Mathematics" required>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>Assignment Title</label>
+            <input type="text" id="assignTitle" placeholder="e.g. Chapter 4 Exercises" required>
+          </div>
+
+          <div class="form-group">
+            <label>Description / Instructions</label>
+            <textarea id="assignDescription" placeholder="Details about the assignment"></textarea>
+          </div>
+
+          <div class="form-group">
+            <label>Due Date</label>
+            <input type="date" id="assignDueDate">
+          </div>
+
+          <button type="submit" class="submit-btn" id="submitBtn">
+            CREATE ASSIGNMENT
+          </button>
+
+        </form>
+      </div>
+
+      <h2 class="section-title">Existing Assignments</h2>
+
+      <div id="assignmentsList"></div>
+
+    </main>
+
+  </div>
+
+  <!-- Supabase JS SDK (must load before supabase-config.js) -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase-config.js"></script>
+
+  <script>
+    const loadingScreen = document.getElementById("loadingScreen");
+    const pageContent = document.getElementById("pageContent");
+    const form = document.getElementById("assignmentForm");
+    const submitBtn = document.getElementById("submitBtn");
+    const formMessage = document.getElementById("formMessage");
+    const assignmentsList = document.getElementById("assignmentsList");
+
+    function showFormMessage(type, text) {
+      formMessage.className = "form-message " + type;
+      formMessage.textContent = text;
+      setTimeout(() => { formMessage.className = "form-message"; }, 3500);
+    }
+
+    function formatDate(dateStr) {
+      if (!dateStr) return "No due date";
+      const d = new Date(dateStr + "T00:00:00");
+      return "Due: " + d.toLocaleDateString(undefined, { year: "numeric", month: "short", day: "numeric" });
+    }
+
+    async function loadAssignments() {
+      const { data: assignments } = await supabaseClient
+        .from("assignments")
+        .select("id, class, subject, title, description, due_date")
+        .order("due_date", { ascending: true });
+
+      if (!assignments || assignments.length === 0) {
+        assignmentsList.innerHTML = '<div class="empty-state">No assignments created yet.</div>';
+        return;
+      }
+
+      assignmentsList.innerHTML = "";
+
+      assignments.forEach(function (a) {
+        const card = document.createElement("div");
+        card.className = "assignment-card";
+
+        card.innerHTML = `
+          <div class="assignment-top">
+            <div>
+              <div class="assignment-title">${a.title}</div>
+              <div class="assignment-meta">${a.class} · ${a.subject} · ${formatDate(a.due_date)}</div>
+            </div>
+            <button class="delete-btn" data-id="${a.id}">DELETE</button>
+          </div>
+          <div class="assignment-desc">${a.description || ""}</div>
+        `;
+
+        assignmentsList.appendChild(card);
+      });
+
+      document.querySelectorAll(".delete-btn").forEach(function (btn) {
+        btn.addEventListener("click", async function () {
+          if (!confirm("Delete this assignment?")) return;
+
+          const id = btn.getAttribute("data-id");
+          const { error } = await supabaseClient.from("assignments").delete().eq("id", id);
+
+          if (error) {
+            showFormMessage("error", "Failed to delete: " + error.message);
+          } else {
+            showFormMessage("success", "Assignment deleted.");
+            loadAssignments();
+          }
+        });
+      });
+    }
+
+    async function init() {
+      const { data: sessionData } = await supabaseClient.auth.getSession();
+      const session = sessionData.session;
+
+      if (!session) {
+        window.location.href = "admin-login.html";
+        return;
+      }
+
+      const { data: adminRow, error: adminError } = await supabaseClient
+        .from("admins")
+        .select("id")
+        .eq("user_id", session.user.id)
+        .single();
+
+      if (adminError || !adminRow) {
+        await supabaseClient.auth.signOut();
+        window.location.href = "admin-login.html";
+        return;
+      }
+
+      await loadAssignments();
+
+      loadingScreen.style.display = "none";
+      pageContent.style.display = "block";
+    }
+
+    form.addEventListener("submit", async function (e) {
+      e.preventDefault();
+
+      const classVal = document.getElementById("assignClass").value;
+      const subject = document.getElementById("assignSubject").value.trim();
+      const title = document.getElementById("assignTitle").value.trim();
+      const description = document.getElementById("assignDescription").value.trim();
+      const dueDate = document.getElementById("assignDueDate").value;
+
+      if (!classVal || !subject || !title) {
+        showFormMessage("error", "Please fill in Class, Subject and Title.");
+        return;
+      }
+
+      submitBtn.disabled = true;
+      submitBtn.textContent = "CREATING...";
+
+      const { error } = await supabaseClient
+        .from("assignments")
+        .insert([{
+          class: classVal,
+          subject: subject,
+          title: title,
+          description: description || null,
+          due_date: dueDate || null
+        }]);
+
+      submitBtn.disabled = false;
+      submitBtn.textContent = "CREATE ASSIGNMENT";
+
+      if (error) {
+        showFormMessage("error", "Failed to create: " + error.message);
+        return;
+      }
+
+      showFormMessage("success", "Assignment created successfully!");
+      form.reset();
+      loadAssignments();
+    });
+
+    init();
+  </script>
+
+</body>
+</html>
