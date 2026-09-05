@@ -236,13 +236,13 @@
         <div class="stat-card">
           <div class="stat-icon">📝</div>
           <h3>Reports Submitted Today</h3>
-          <div class="stat-number">0</div>
+          <div class="stat-number" id="submittedTodayCount">0</div>
         </div>
 
         <div class="stat-card">
           <div class="stat-icon">⏳</div>
           <h3>Reports Not Submitted</h3>
-          <div class="stat-number">0</div>
+          <div class="stat-number" id="notSubmittedTodayCount">0</div>
         </div>
 
         <div class="stat-card">
@@ -368,6 +368,28 @@
 
       document.getElementById("studentCount").textContent = studentCount ?? 0;
       document.getElementById("parentCount").textContent = parentCount ?? 0;
+
+      // Reports submitted today (each student can only have one report per day,
+      // so counting today's rows in `reports` gives us how many students submitted)
+      const todayStr = (function () {
+        const d = new Date();
+        const year = d.getFullYear();
+        const month = String(d.getMonth() + 1).padStart(2, "0");
+        const day = String(d.getDate()).padStart(2, "0");
+        return year + "-" + month + "-" + day;
+      })();
+
+      const { count: submittedTodayCount } = await supabaseClient
+        .from("reports")
+        .select("*", { count: "exact", head: true })
+        .eq("report_date", todayStr);
+
+      const submitted = submittedTodayCount ?? 0;
+      const totalStudents = studentCount ?? 0;
+      const notSubmitted = Math.max(totalStudents - submitted, 0);
+
+      document.getElementById("submittedTodayCount").textContent = submitted;
+      document.getElementById("notSubmittedTodayCount").textContent = notSubmitted;
 
       // 4. Reveal the dashboard
       loadingScreen.style.display = "none";
