@@ -91,15 +91,29 @@
       border: 1px solid #cfe4f2;
     }
 
-    .form-card {
+    .section-card {
       background: white;
       border-radius: 14px;
-      padding: 22px;
+      padding: 20px;
+      margin-bottom: 16px;
       box-shadow: 0 4px 15px rgba(0,0,0,0.08);
     }
 
+    .section-title {
+      color: #12355b;
+      font-size: 16px;
+      font-weight: bold;
+      margin-bottom: 14px;
+      padding-bottom: 10px;
+      border-bottom: 2px solid #e8f4fb;
+    }
+
     .form-group {
-      margin-bottom: 18px;
+      margin-bottom: 16px;
+    }
+
+    .form-group:last-child {
+      margin-bottom: 0;
     }
 
     label {
@@ -110,20 +124,100 @@
       color: #444;
     }
 
-    textarea {
+    input[type="text"], input[type="date"], select, textarea {
       width: 100%;
-      padding: 13px;
+      padding: 12px;
       border: 1px solid #ddd;
       border-radius: 8px;
       font-size: 15px;
-      min-height: 90px;
-      resize: vertical;
       font-family: inherit;
     }
 
-    textarea:focus {
+    textarea {
+      min-height: 80px;
+      resize: vertical;
+    }
+
+    input:focus, select:focus, textarea:focus {
       border-color: #1d5d8f;
       outline: none;
+    }
+
+    .yes-no-group {
+      display: flex;
+      gap: 10px;
+    }
+
+    .yes-no-group label {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      padding: 12px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      font-weight: normal;
+      cursor: pointer;
+      margin-bottom: 0;
+    }
+
+    .yes-no-group input[type="radio"] {
+      width: auto;
+    }
+
+    .conditional-block {
+      display: none;
+      margin-top: 14px;
+      padding-top: 14px;
+      border-top: 1px dashed #ddd;
+    }
+
+    .conditional-block.visible {
+      display: block;
+    }
+
+    .entry-card {
+      background: #f4f7fb;
+      border-radius: 10px;
+      padding: 14px;
+      margin-bottom: 12px;
+    }
+
+    .entry-card-title {
+      font-size: 13px;
+      font-weight: bold;
+      color: #12355b;
+      margin-bottom: 10px;
+    }
+
+    .entry-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+
+    .remove-entry-btn {
+      background: none;
+      border: 1px solid #c0392b;
+      color: #c0392b;
+      padding: 6px 10px;
+      border-radius: 6px;
+      font-size: 12px;
+      cursor: pointer;
+    }
+
+    .add-entry-btn {
+      width: 100%;
+      padding: 11px;
+      border: 1px dashed #1d5d8f;
+      background: none;
+      color: #1d5d8f;
+      border-radius: 8px;
+      font-weight: bold;
+      cursor: pointer;
+      font-size: 14px;
     }
 
     .submit-btn {
@@ -136,10 +230,6 @@
       font-weight: bold;
       border-radius: 8px;
       cursor: pointer;
-    }
-
-    .submit-btn:hover {
-      background: #1d5d8f;
     }
 
     .submit-btn:disabled {
@@ -180,42 +270,173 @@
 
       <div id="formMessage" class="form-message"></div>
 
-      <div class="form-card">
+      <form id="reportForm" novalidate>
 
-        <form id="reportForm" novalidate>
+        <!-- SECTION 2: DAILY SCHOOL EXPERIENCE -->
+        <div class="section-card">
+          <div class="section-title">How was school today?</div>
 
           <div class="form-group">
-            <label>Subjects Covered Today</label>
-            <textarea id="subjectsCovered" placeholder="e.g. Mathematics, English, Basic Science"></textarea>
+            <select id="dailyRating">
+              <option value="">Select...</option>
+              <option>Excellent</option>
+              <option>Very Good</option>
+              <option>Good</option>
+              <option>Fair</option>
+              <option>Bad</option>
+              <option>Very Bad</option>
+            </select>
           </div>
 
           <div class="form-group">
-            <label>Homework Given</label>
-            <textarea id="homeworkGiven" placeholder="List any homework or assignments given today"></textarea>
+            <label>Tell us more (optional)</label>
+            <textarea id="dailyRatingComment" placeholder="Explain your answer"></textarea>
           </div>
 
           <div class="form-group">
-            <label>Classwork Summary</label>
-            <textarea id="classworkSummary" placeholder="Briefly describe classwork done today"></textarea>
+            <label>What did you learn in school today?</label>
+            <textarea id="whatLearned"></textarea>
           </div>
+        </div>
+
+        <!-- SECTION 3: UNUSUAL EVENTS -->
+        <div class="section-card">
+          <div class="section-title">Did anything unusual happen in school today?</div>
+
+          <div class="yes-no-group">
+            <label><input type="radio" name="hadUnusualEvent" value="yes"> Yes</label>
+            <label><input type="radio" name="hadUnusualEvent" value="no" checked> No</label>
+          </div>
+
+          <div class="conditional-block" id="unusualEventBlock">
+            <div class="form-group">
+              <label>Please explain what happened</label>
+              <textarea id="unusualEventDetails"></textarea>
+            </div>
+          </div>
+        </div>
+
+        <!-- SECTION 4: DISCIPLINE AND PUNISHMENT -->
+        <div class="section-card">
+          <div class="section-title">Were you punished in school today?</div>
+
+          <div class="yes-no-group">
+            <label><input type="radio" name="wasPunished" value="yes"> Yes</label>
+            <label><input type="radio" name="wasPunished" value="no" checked> No</label>
+          </div>
+
+          <div class="conditional-block" id="punishmentBlock">
+            <div class="form-group">
+              <label>What did you do that resulted in the punishment?</label>
+              <textarea id="punishmentReason"></textarea>
+            </div>
+            <div class="form-group">
+              <label>What punishment were you given?</label>
+              <textarea id="punishmentGiven"></textarea>
+            </div>
+          </div>
+        </div>
+
+        <!-- SECTION 5: DAILY ASSIGNMENTS -->
+        <div class="section-card">
+          <div class="section-title">Were you given any assignments today?</div>
+
+          <div class="yes-no-group">
+            <label><input type="radio" name="hadAssignments" value="yes"> Yes</label>
+            <label><input type="radio" name="hadAssignments" value="no" checked> No</label>
+          </div>
+
+          <div class="conditional-block" id="assignmentsBlock">
+            <div id="assignmentsContainer"></div>
+            <button type="button" class="add-entry-btn" id="addAssignmentBtn">+ Add Another Assignment</button>
+          </div>
+        </div>
+
+        <!-- SECTION 6: TOPICS NOT UNDERSTOOD -->
+        <div class="section-card">
+          <div class="section-title">Is there anything you were taught that you did not understand?</div>
+
+          <div class="yes-no-group">
+            <label><input type="radio" name="hadTopics" value="yes"> Yes</label>
+            <label><input type="radio" name="hadTopics" value="no" checked> No</label>
+          </div>
+
+          <div class="conditional-block" id="topicsBlock">
+            <div id="topicsContainer"></div>
+            <button type="button" class="add-entry-btn" id="addTopicBtn" style="margin-bottom:16px;">+ Add Another Topic</button>
+
+            <div class="form-group">
+              <label>Why didn't you understand?</label>
+              <textarea id="notUnderstoodReason"></textarea>
+            </div>
+
+            <div class="form-group">
+              <label>Did you ask your teacher questions about it?</label>
+              <div class="yes-no-group">
+                <label><input type="radio" name="askedTeacher" value="yes"> Yes</label>
+                <label><input type="radio" name="askedTeacher" value="no"> No</label>
+              </div>
+            </div>
+
+            <div class="conditional-block" id="whyNotAskedBlock">
+              <div class="form-group">
+                <label>Why didn't you ask the teacher? (optional)</label>
+                <textarea id="whyNotAsked"></textarea>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- SECTION 7: CLASSWORK -->
+        <div class="section-card">
+          <div class="section-title">Were you given classwork today?</div>
+
+          <div class="yes-no-group">
+            <label><input type="radio" name="hadClasswork" value="yes"> Yes</label>
+            <label><input type="radio" name="hadClasswork" value="no" checked> No</label>
+          </div>
+
+          <div class="conditional-block" id="classworkBlock">
+            <div id="classworkContainer"></div>
+            <button type="button" class="add-entry-btn" id="addClassworkBtn">+ Add Another Classwork</button>
+          </div>
+        </div>
+
+        <!-- SECTION 8: CORRECTIONS -->
+        <div class="section-card">
+          <div class="section-title">Have you corrected the questions you failed?</div>
 
           <div class="form-group">
-            <label>How I Felt / Behaviour Notes</label>
-            <textarea id="behaviorNotes" placeholder="How was your day? Anything you want your parent to know?"></textarea>
+            <select id="correctionsStatus">
+              <option value="">Select...</option>
+              <option>Yes</option>
+              <option>No</option>
+              <option>Not Applicable</option>
+            </select>
           </div>
+
+          <div class="conditional-block" id="correctionsReasonBlock">
+            <div class="form-group">
+              <label>Why have you not completed the corrections? (optional)</label>
+              <textarea id="correctionsReason"></textarea>
+            </div>
+          </div>
+        </div>
+
+        <!-- SECTION 9: ADDITIONAL COMMENTS -->
+        <div class="section-card">
+          <div class="section-title">Anything else you'd like your Parent/Guardian or School to know?</div>
 
           <div class="form-group">
-            <label>Unusual Incident (Optional)</label>
-            <textarea id="unusualIncident" placeholder="Only fill this in if something unusual happened today"></textarea>
+            <textarea id="additionalComments"></textarea>
           </div>
+        </div>
 
-          <button type="submit" class="submit-btn" id="submitBtn">
-            SUBMIT TODAY'S REPORT
-          </button>
+        <button type="submit" class="submit-btn" id="submitBtn">
+          SUBMIT TODAY'S REPORT
+        </button>
 
-        </form>
-
-      </div>
+      </form>
 
     </main>
 
@@ -234,6 +455,9 @@
     const dateLabel = document.getElementById("dateLabel");
 
     let currentStudentId = null;
+    let assignmentCount = 0;
+    let topicCount = 0;
+    let classworkCount = 0;
 
     function showFormMessage(type, text) {
       formMessage.className = "form-message " + type;
@@ -248,6 +472,107 @@
       return year + "-" + month + "-" + day;
     }
 
+    function wireYesNo(radioName, blockId) {
+      const radios = document.querySelectorAll(`input[name="${radioName}"]`);
+      const block = document.getElementById(blockId);
+      radios.forEach(function (radio) {
+        radio.addEventListener("change", function () {
+          if (radio.value === "yes" && radio.checked) {
+            block.classList.add("visible");
+          } else if (radio.value === "no" && radio.checked) {
+            block.classList.remove("visible");
+          }
+        });
+      });
+    }
+
+    wireYesNo("hadUnusualEvent", "unusualEventBlock");
+    wireYesNo("wasPunished", "punishmentBlock");
+    wireYesNo("hadAssignments", "assignmentsBlock");
+    wireYesNo("hadTopics", "topicsBlock");
+    wireYesNo("hadClasswork", "classworkBlock");
+    wireYesNo("askedTeacher", "whyNotAskedBlock");
+
+    function addAssignmentRow() {
+      assignmentCount++;
+      const container = document.getElementById("assignmentsContainer");
+      const div = document.createElement("div");
+      div.className = "entry-card assignment-entry";
+      div.innerHTML = `
+        <div class="entry-card-title">Assignment ${assignmentCount}</div>
+        <div class="entry-row">
+          <input type="text" class="a-subject" placeholder="Subject">
+          <input type="text" class="a-teacher" placeholder="Teacher">
+        </div>
+        <div class="form-group">
+          <textarea class="a-instruction" placeholder="Assignment Question / Instruction"></textarea>
+        </div>
+        <div class="entry-row">
+          <input type="date" class="a-submission-date">
+          <button type="button" class="remove-entry-btn">Remove</button>
+        </div>
+      `;
+      div.querySelector(".remove-entry-btn").addEventListener("click", function () { div.remove(); });
+      container.appendChild(div);
+    }
+
+    function addTopicRow() {
+      topicCount++;
+      const container = document.getElementById("topicsContainer");
+      const div = document.createElement("div");
+      div.className = "entry-card topic-entry";
+      div.innerHTML = `
+        <div class="entry-card-title">Topic ${topicCount}</div>
+        <div class="entry-row">
+          <input type="text" class="t-subject" placeholder="Subject">
+          <input type="text" class="t-topic" placeholder="Topic">
+        </div>
+        <div class="entry-row">
+          <input type="text" class="t-teacher" placeholder="Teacher">
+          <button type="button" class="remove-entry-btn">Remove</button>
+        </div>
+      `;
+      div.querySelector(".remove-entry-btn").addEventListener("click", function () { div.remove(); });
+      container.appendChild(div);
+    }
+
+    function addClassworkRow() {
+      classworkCount++;
+      const container = document.getElementById("classworkContainer");
+      const div = document.createElement("div");
+      div.className = "entry-card classwork-entry";
+      div.innerHTML = `
+        <div class="entry-card-title">Classwork ${classworkCount}</div>
+        <div class="entry-row">
+          <input type="text" class="c-subject" placeholder="Subject">
+          <input type="text" class="c-teacher" placeholder="Teacher">
+        </div>
+        <div class="entry-row">
+          <input type="text" class="c-score" placeholder="Score">
+          <button type="button" class="remove-entry-btn">Remove</button>
+        </div>
+      `;
+      div.querySelector(".remove-entry-btn").addEventListener("click", function () { div.remove(); });
+      container.appendChild(div);
+    }
+
+    document.getElementById("addAssignmentBtn").addEventListener("click", addAssignmentRow);
+    document.getElementById("addTopicBtn").addEventListener("click", addTopicRow);
+    document.getElementById("addClassworkBtn").addEventListener("click", addClassworkRow);
+
+    addAssignmentRow();
+    addTopicRow();
+    addClassworkRow();
+
+    document.getElementById("correctionsStatus").addEventListener("change", function () {
+      const block = document.getElementById("correctionsReasonBlock");
+      if (this.value === "No") {
+        block.classList.add("visible");
+      } else {
+        block.classList.remove("visible");
+      }
+    });
+
     async function init() {
       const { data: sessionData } = await supabaseClient.auth.getSession();
       const session = sessionData.session;
@@ -259,7 +584,7 @@
 
       const { data: student, error } = await supabaseClient
         .from("students")
-        .select("id, full_name")
+        .select("id")
         .eq("user_id", session.user.id)
         .single();
 
@@ -274,7 +599,6 @@
       const todayStr = todayDateString();
       dateLabel.textContent = "Today's date: " + todayStr;
 
-      // Check if a report already exists for today
       const { data: existingReport } = await supabaseClient
         .from("reports")
         .select("id")
@@ -291,35 +615,106 @@
       pageContent.style.display = "block";
     }
 
+    function getRadioValue(name) {
+      const el = document.querySelector(`input[name="${name}"]:checked`);
+      return el ? el.value : "no";
+    }
+
     form.addEventListener("submit", async function (e) {
       e.preventDefault();
-
-      const subjectsCovered = document.getElementById("subjectsCovered").value.trim();
-      const homeworkGiven = document.getElementById("homeworkGiven").value.trim();
-      const classworkSummary = document.getElementById("classworkSummary").value.trim();
-      const behaviorNotes = document.getElementById("behaviorNotes").value.trim();
-      const unusualIncident = document.getElementById("unusualIncident").value.trim();
 
       submitBtn.disabled = true;
       submitBtn.textContent = "SUBMITTING...";
 
-      const { error } = await supabaseClient
-        .from("reports")
-        .insert([{
-          student_id: currentStudentId,
-          report_date: todayDateString(),
-          subjects_covered: subjectsCovered || null,
-          homework_given: homeworkGiven || null,
-          classwork_summary: classworkSummary || null,
-          behavior_notes: behaviorNotes || null,
-          unusual_incident: unusualIncident || null
-        }]);
+      const hadUnusualEvent = getRadioValue("hadUnusualEvent") === "yes";
+      const wasPunished = getRadioValue("wasPunished") === "yes";
+      const hadAssignments = getRadioValue("hadAssignments") === "yes";
+      const hadTopics = getRadioValue("hadTopics") === "yes";
+      const hadClasswork = getRadioValue("hadClasswork") === "yes";
+      const askedTeacherRadio = document.querySelector('input[name="askedTeacher"]:checked');
+      const askedTeacher = askedTeacherRadio ? askedTeacherRadio.value === "yes" : null;
 
-      if (error) {
-        showFormMessage("error", "Failed to submit: " + error.message);
+      const reportPayload = {
+        student_id: currentStudentId,
+        report_date: todayDateString(),
+        daily_rating: document.getElementById("dailyRating").value || null,
+        daily_rating_comment: document.getElementById("dailyRatingComment").value.trim() || null,
+        what_learned: document.getElementById("whatLearned").value.trim() || null,
+        had_unusual_event: hadUnusualEvent,
+        unusual_incident: hadUnusualEvent ? (document.getElementById("unusualEventDetails").value.trim() || null) : null,
+        was_punished: wasPunished,
+        punishment_reason: wasPunished ? (document.getElementById("punishmentReason").value.trim() || null) : null,
+        punishment_given: wasPunished ? (document.getElementById("punishmentGiven").value.trim() || null) : null,
+        had_assignments: hadAssignments,
+        had_topics_not_understood: hadTopics,
+        not_understood_reason: hadTopics ? (document.getElementById("notUnderstoodReason").value.trim() || null) : null,
+        asked_teacher: hadTopics ? askedTeacher : null,
+        why_not_asked: (hadTopics && askedTeacher === false) ? (document.getElementById("whyNotAsked").value.trim() || null) : null,
+        had_classwork: hadClasswork,
+        corrections_status: document.getElementById("correctionsStatus").value || null,
+        corrections_reason: document.getElementById("correctionsReason").value.trim() || null,
+        additional_comments: document.getElementById("additionalComments").value.trim() || null
+      };
+
+      const { data: insertedReport, error: reportError } = await supabaseClient
+        .from("reports")
+        .insert([reportPayload])
+        .select("id")
+        .single();
+
+      if (reportError || !insertedReport) {
+        showFormMessage("error", "Failed to submit: " + (reportError ? reportError.message : "unknown error"));
         submitBtn.disabled = false;
         submitBtn.textContent = "SUBMIT TODAY'S REPORT";
         return;
+      }
+
+      const reportId = insertedReport.id;
+
+      if (hadAssignments) {
+        const rows = Array.from(document.querySelectorAll(".assignment-entry")).map(function (el) {
+          return {
+            report_id: reportId,
+            subject: el.querySelector(".a-subject").value.trim() || null,
+            teacher: el.querySelector(".a-teacher").value.trim() || null,
+            instruction: el.querySelector(".a-instruction").value.trim() || null,
+            submission_date: el.querySelector(".a-submission-date").value || null
+          };
+        }).filter(r => r.subject || r.instruction);
+
+        if (rows.length > 0) {
+          await supabaseClient.from("report_assignments").insert(rows);
+        }
+      }
+
+      if (hadTopics) {
+        const rows = Array.from(document.querySelectorAll(".topic-entry")).map(function (el) {
+          return {
+            report_id: reportId,
+            subject: el.querySelector(".t-subject").value.trim() || null,
+            topic: el.querySelector(".t-topic").value.trim() || null,
+            teacher: el.querySelector(".t-teacher").value.trim() || null
+          };
+        }).filter(r => r.subject || r.topic);
+
+        if (rows.length > 0) {
+          await supabaseClient.from("report_topics").insert(rows);
+        }
+      }
+
+      if (hadClasswork) {
+        const rows = Array.from(document.querySelectorAll(".classwork-entry")).map(function (el) {
+          return {
+            report_id: reportId,
+            subject: el.querySelector(".c-subject").value.trim() || null,
+            teacher: el.querySelector(".c-teacher").value.trim() || null,
+            score: el.querySelector(".c-score").value.trim() || null
+          };
+        }).filter(r => r.subject || r.score);
+
+        if (rows.length > 0) {
+          await supabaseClient.from("report_classwork").insert(rows);
+        }
       }
 
       showFormMessage("success", "Report submitted successfully! Redirecting...");
