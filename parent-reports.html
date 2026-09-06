@@ -73,30 +73,68 @@
       color: #12355b;
       font-weight: bold;
       font-size: 16px;
-      margin-bottom: 12px;
+      margin-bottom: 4px;
     }
 
-    .report-field {
-      margin-bottom: 12px;
-    }
-
-    .report-field label {
-      display: block;
+    .rating-badge {
+      display: inline-block;
+      padding: 4px 10px;
+      border-radius: 6px;
       font-size: 12px;
-      color: #888;
       font-weight: bold;
-      text-transform: uppercase;
-      margin-bottom: 3px;
+      margin-bottom: 14px;
+      background: #eef6fb;
+      color: #12355b;
     }
 
-    .report-field p {
+    .sub-section {
+      margin-bottom: 14px;
+      padding-bottom: 14px;
+      border-bottom: 1px solid #eee;
+    }
+
+    .sub-section:last-child {
+      border-bottom: none;
+      margin-bottom: 0;
+      padding-bottom: 0;
+    }
+
+    .sub-section-title {
+      font-size: 13px;
+      font-weight: bold;
+      color: #12355b;
+      text-transform: uppercase;
+      margin-bottom: 6px;
+    }
+
+    .sub-section p {
       font-size: 14px;
       color: #333;
       line-height: 1.5;
     }
 
-    .report-field.incident p {
+    .flag-red p {
       color: #c0392b;
+    }
+
+    .flag-orange p {
+      color: #b8860b;
+    }
+
+    .entry-item {
+      background: #f4f7fb;
+      border-radius: 8px;
+      padding: 10px 12px;
+      margin-bottom: 8px;
+      font-size: 13px;
+    }
+
+    .entry-item:last-child {
+      margin-bottom: 0;
+    }
+
+    .entry-item strong {
+      color: #12355b;
     }
 
     .loading-screen {
@@ -145,7 +183,7 @@
     <main class="container">
 
       <h1>Daily Reports</h1>
-      <p class="subtitle" id="subtitleText">Reports submitted for your child.</p>
+      <p class="subtitle">Reports submitted for your child.</p>
 
       <div id="reportsList"></div>
 
@@ -161,21 +199,80 @@
     const loadingScreen = document.getElementById("loadingScreen");
     const pageContent = document.getElementById("pageContent");
     const reportsList = document.getElementById("reportsList");
-    const subtitleText = document.getElementById("subtitleText");
 
     function formatDate(dateStr) {
       const d = new Date(dateStr + "T00:00:00");
       return d.toLocaleDateString(undefined, { weekday: "long", year: "numeric", month: "long", day: "numeric" });
     }
 
-    function fieldRow(label, value, isIncident) {
+    function section(title, value, flagClass) {
       if (!value) return "";
       return `
-        <div class="report-field ${isIncident ? 'incident' : ''}">
-          <label>${label}</label>
+        <div class="sub-section ${flagClass || ''}">
+          <div class="sub-section-title">${title}</div>
           <p>${value}</p>
         </div>
       `;
+    }
+
+    function renderReport(report) {
+      const card = document.createElement("div");
+      card.className = "report-card";
+
+      let html = `<div class="report-date">${formatDate(report.report_date)}</div>`;
+
+      if (report.daily_rating) {
+        html += `<div class="rating-badge">School today: ${report.daily_rating}</div>`;
+      }
+
+      html += section("Comment on the day", report.daily_rating_comment);
+      html += section("What they learned", report.what_learned);
+
+      if (report.had_unusual_event) {
+        html += section("⚠️ Unusual event", report.unusual_incident, "flag-red");
+      }
+
+      if (report.was_punished) {
+        html += section("🚨 Reason for punishment", report.punishment_reason, "flag-red");
+        html += section("🚨 Punishment given", report.punishment_given, "flag-red");
+      }
+
+      if (report.had_assignments && report.report_assignments && report.report_assignments.length > 0) {
+        let entries = report.report_assignments.map(function (a) {
+          return `<div class="entry-item"><strong>${a.subject || 'Assignment'}</strong> (${a.teacher || 'no teacher listed'})<br>${a.instruction || ''}${a.submission_date ? '<br>Due: ' + a.submission_date : ''}</div>`;
+        }).join("");
+        html += `<div class="sub-section"><div class="sub-section-title">Assignments</div>${entries}</div>`;
+      }
+
+      if (report.had_topics_not_understood && report.report_topics && report.report_topics.length > 0) {
+        let entries = report.report_topics.map(function (t) {
+          return `<div class="entry-item"><strong>${t.subject || ''}</strong> - ${t.topic || ''} (${t.teacher || 'no teacher listed'})</div>`;
+        }).join("");
+        html += `<div class="sub-section flag-orange"><div class="sub-section-title">💡 Topics not understood</div>${entries}</div>`;
+        html += section("Why they didn't understand", report.not_understood_reason);
+        if (report.asked_teacher === false) {
+          html += section("Did not ask the teacher — why", report.why_not_asked);
+        }
+      }
+
+      if (report.had_classwork && report.report_classwork && report.report_classwork.length > 0) {
+        let entries = report.report_classwork.map(function (c) {
+          return `<div class="entry-item"><strong>${c.subject || ''}</strong> (${c.teacher || 'no teacher listed'}) — Score: ${c.score || 'N/A'}</div>`;
+        }).join("");
+        html += `<div class="sub-section"><div class="sub-section-title">Classwork</div>${entries}</div>`;
+      }
+
+      if (report.corrections_status) {
+        html += section("Corrections completed?", report.corrections_status);
+        if (report.corrections_status === "No") {
+          html += section("Why corrections weren't done", report.corrections_reason);
+        }
+      }
+
+      html += section("Additional comments", report.additional_comments);
+
+      card.innerHTML = html;
+      return card;
     }
 
     async function init() {
@@ -189,7 +286,7 @@
 
       const { data: parent, error: parentError } = await supabaseClient
         .from("parents")
-        .select("linked_student_id, child_full_name")
+        .select("linked_student_id")
         .eq("user_id", session.user.id)
         .single();
 
@@ -214,34 +311,18 @@
 
       const { data: reports, error: reportsError } = await supabaseClient
         .from("reports")
-        .select("report_date, subjects_covered, homework_given, classwork_summary, behavior_notes, unusual_incident")
+        .select("*, report_assignments(*), report_topics(*), report_classwork(*)")
         .eq("student_id", parent.linked_student_id)
         .order("report_date", { ascending: false });
 
       if (reportsError || !reports || reports.length === 0) {
         reportsList.innerHTML = '<div class="empty-state">No reports submitted yet.</div>';
-        loadingScreen.style.display = "none";
-        pageContent.style.display = "block";
-        return;
+      } else {
+        reportsList.innerHTML = "";
+        reports.forEach(function (report) {
+          reportsList.appendChild(renderReport(report));
+        });
       }
-
-      reportsList.innerHTML = "";
-
-      reports.forEach(function (report) {
-        const card = document.createElement("div");
-        card.className = "report-card";
-
-        card.innerHTML = `
-          <div class="report-date">${formatDate(report.report_date)}</div>
-          ${fieldRow("Subjects Covered", report.subjects_covered)}
-          ${fieldRow("Homework Given", report.homework_given)}
-          ${fieldRow("Classwork Summary", report.classwork_summary)}
-          ${fieldRow("Behaviour Notes", report.behavior_notes)}
-          ${fieldRow("Unusual Incident", report.unusual_incident, true)}
-        `;
-
-        reportsList.appendChild(card);
-      });
 
       loadingScreen.style.display = "none";
       pageContent.style.display = "block";
