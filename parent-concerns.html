@@ -1,1 +1,447 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
+  <title>My Concerns & Feedback | Daily Student Digital Communication System</title>
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: Arial, sans-serif;
+    }
+
+    body {
+      background: #f4f7fb;
+      color: #333;
+    }
+
+    header {
+      background: #12355b;
+      color: white;
+      padding: 18px 20px;
+    }
+
+    .header-content {
+      max-width: 700px;
+      margin: auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .logo {
+      font-size: 16px;
+      font-weight: bold;
+    }
+
+    .back-link {
+      color: white;
+      text-decoration: none;
+      font-size: 14px;
+    }
+
+    .container {
+      max-width: 700px;
+      margin: auto;
+      padding: 25px 18px;
+    }
+
+    h1 {
+      color: #12355b;
+      font-size: 24px;
+      margin-bottom: 8px;
+    }
+
+    .subtitle {
+      color: #666;
+      margin-bottom: 20px;
+    }
+
+    .form-message {
+      display: none;
+      padding: 14px;
+      border-radius: 8px;
+      margin-bottom: 18px;
+      font-size: 14px;
+      font-weight: bold;
+    }
+
+    .form-message.success {
+      display: block;
+      background: #e6f7ec;
+      color: #1e7e34;
+      border: 1px solid #b7e4c7;
+    }
+
+    .form-message.error {
+      display: block;
+      background: #fdecea;
+      color: #c0392b;
+      border: 1px solid #f5c6cb;
+    }
+
+    .form-card {
+      background: white;
+      border-radius: 14px;
+      padding: 22px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+      margin-bottom: 25px;
+    }
+
+    .form-card h2 {
+      color: #12355b;
+      font-size: 18px;
+      margin-bottom: 16px;
+    }
+
+    .form-group {
+      margin-bottom: 16px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 6px;
+      font-size: 13px;
+      font-weight: bold;
+      color: #444;
+    }
+
+    input, textarea {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      font-size: 15px;
+      font-family: inherit;
+    }
+
+    textarea {
+      min-height: 100px;
+      resize: vertical;
+    }
+
+    input:focus, textarea:focus {
+      border-color: #1d5d8f;
+      outline: none;
+    }
+
+    .submit-btn {
+      width: 100%;
+      padding: 14px;
+      border: none;
+      background: #12355b;
+      color: white;
+      font-size: 15px;
+      font-weight: bold;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+
+    .submit-btn:disabled {
+      background: #9aa8b5;
+      cursor: not-allowed;
+    }
+
+    .section-title {
+      color: #12355b;
+      font-size: 20px;
+      margin-bottom: 15px;
+    }
+
+    .concern-card {
+      background: white;
+      border-radius: 12px;
+      padding: 18px 20px;
+      margin-bottom: 12px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.07);
+    }
+
+    .concern-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 8px;
+    }
+
+    .concern-subject {
+      color: #12355b;
+      font-weight: bold;
+      font-size: 16px;
+    }
+
+    .status-badge {
+      display: inline-block;
+      padding: 4px 10px;
+      border-radius: 6px;
+      font-size: 11px;
+      font-weight: bold;
+    }
+
+    .status-badge.open {
+      background: #fff3cd;
+      color: #856404;
+    }
+
+    .status-badge.responded {
+      background: #e6f7ec;
+      color: #1e7e34;
+    }
+
+    .concern-message {
+      font-size: 14px;
+      color: #333;
+      margin-bottom: 10px;
+      line-height: 1.5;
+    }
+
+    .concern-date {
+      font-size: 12px;
+      color: #999;
+      margin-bottom: 10px;
+    }
+
+    .admin-response {
+      background: #eef6fb;
+      border-radius: 8px;
+      padding: 12px;
+      margin-top: 10px;
+    }
+
+    .admin-response-label {
+      font-size: 12px;
+      font-weight: bold;
+      color: #12355b;
+      text-transform: uppercase;
+      margin-bottom: 5px;
+    }
+
+    .admin-response p {
+      font-size: 14px;
+      color: #333;
+      line-height: 1.5;
+    }
+
+    .loading-screen {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #12355b;
+      font-weight: bold;
+    }
+
+    .empty-state {
+      background: white;
+      padding: 30px;
+      border-radius: 12px;
+      text-align: center;
+      color: #777;
+    }
+
+    .no-link-notice {
+      background: #fff3cd;
+      color: #856404;
+      padding: 16px;
+      border-radius: 10px;
+      font-size: 14px;
+      line-height: 1.5;
+      margin-bottom: 20px;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div id="loadingScreen" class="loading-screen">
+    Loading...
+  </div>
+
+  <div id="pageContent" style="display:none;">
+
+    <header>
+      <div class="header-content">
+        <div class="logo">DAILY STUDENT CONNECT</div>
+        <a href="parent-dashboard.html" class="back-link">← Back to Dashboard</a>
+      </div>
+    </header>
+
+    <main class="container">
+
+      <h1>My Concerns & Feedback</h1>
+      <p class="subtitle">Send a message to the school and view responses.</p>
+
+      <div id="formMessage" class="form-message"></div>
+
+      <div class="form-card">
+        <h2>Send a New Message</h2>
+
+        <form id="concernForm" novalidate>
+
+          <div class="form-group">
+            <label>Subject</label>
+            <input type="text" id="subject" placeholder="What is this about?" required>
+          </div>
+
+          <div class="form-group">
+            <label>Message</label>
+            <textarea id="message" placeholder="Write your concern or feedback here" required></textarea>
+          </div>
+
+          <button type="submit" class="submit-btn" id="submitBtn">
+            SEND TO SCHOOL
+          </button>
+
+        </form>
+      </div>
+
+      <h2 class="section-title">My Previous Messages</h2>
+
+      <div id="concernsList"></div>
+
+    </main>
+
+  </div>
+
+  <!-- Supabase JS SDK (must load before supabase-config.js) -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase-config.js"></script>
+
+  <script>
+    const loadingScreen = document.getElementById("loadingScreen");
+    const pageContent = document.getElementById("pageContent");
+    const form = document.getElementById("concernForm");
+    const submitBtn = document.getElementById("submitBtn");
+    const formMessage = document.getElementById("formMessage");
+    const concernsList = document.getElementById("concernsList");
+
+    let currentParentId = null;
+    let currentStudentId = null;
+
+    function showFormMessage(type, text) {
+      formMessage.className = "form-message " + type;
+      formMessage.textContent = text;
+      setTimeout(() => { formMessage.className = "form-message"; }, 3500);
+    }
+
+    function formatDate(dateStr) {
+      const d = new Date(dateStr);
+      return d.toLocaleDateString(undefined, { year: "numeric", month: "short", day: "numeric" });
+    }
+
+    async function loadConcerns() {
+      const { data: concerns } = await supabaseClient
+        .from("concerns")
+        .select("id, subject, message, status, admin_response, created_at")
+        .eq("parent_id", currentParentId)
+        .order("created_at", { ascending: false });
+
+      if (!concerns || concerns.length === 0) {
+        concernsList.innerHTML = '<div class="empty-state">You haven\'t sent any messages yet.</div>';
+        return;
+      }
+
+      concernsList.innerHTML = "";
+
+      concerns.forEach(function (c) {
+        const isResponded = c.status === "Responded";
+        const card = document.createElement("div");
+        card.className = "concern-card";
+
+        card.innerHTML = `
+          <div class="concern-top">
+            <div class="concern-subject">${c.subject}</div>
+            <div class="status-badge ${isResponded ? 'responded' : 'open'}">
+              ${isResponded ? '✓ RESPONDED' : '⏳ AWAITING RESPONSE'}
+            </div>
+          </div>
+          <div class="concern-date">${formatDate(c.created_at)}</div>
+          <div class="concern-message">${c.message}</div>
+          ${isResponded ? `
+            <div class="admin-response">
+              <div class="admin-response-label">School's Response</div>
+              <p>${c.admin_response}</p>
+            </div>
+          ` : ''}
+        `;
+
+        concernsList.appendChild(card);
+      });
+    }
+
+    async function init() {
+      const { data: sessionData } = await supabaseClient.auth.getSession();
+      const session = sessionData.session;
+
+      if (!session) {
+        window.location.href = "parent-login.html";
+        return;
+      }
+
+      const { data: parent, error } = await supabaseClient
+        .from("parents")
+        .select("id, linked_student_id")
+        .eq("user_id", session.user.id)
+        .single();
+
+      if (error || !parent) {
+        await supabaseClient.auth.signOut();
+        window.location.href = "parent-login.html";
+        return;
+      }
+
+      currentParentId = parent.id;
+      currentStudentId = parent.linked_student_id;
+
+      await loadConcerns();
+
+      loadingScreen.style.display = "none";
+      pageContent.style.display = "block";
+    }
+
+    form.addEventListener("submit", async function (e) {
+      e.preventDefault();
+
+      const subject = document.getElementById("subject").value.trim();
+      const message = document.getElementById("message").value.trim();
+
+      if (!subject || !message) {
+        showFormMessage("error", "Please fill in both the subject and message.");
+        return;
+      }
+
+      submitBtn.disabled = true;
+      submitBtn.textContent = "SENDING...";
+
+      const { error } = await supabaseClient
+        .from("concerns")
+        .insert([{
+          parent_id: currentParentId,
+          student_id: currentStudentId || null,
+          subject: subject,
+          message: message
+        }]);
+
+      submitBtn.disabled = false;
+      submitBtn.textContent = "SEND TO SCHOOL";
+
+      if (error) {
+        showFormMessage("error", "Failed to send: " + error.message);
+        return;
+      }
+
+      showFormMessage("success", "Message sent to the school!");
+      form.reset();
+      loadConcerns();
+    });
+
+    init();
+  </script>
+
+</body>
+</html>
