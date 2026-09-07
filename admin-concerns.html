@@ -1,1 +1,373 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
+  <title>Parent Concerns | Daily Student Digital Communication System</title>
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: Arial, sans-serif;
+    }
+
+    body {
+      background: #f4f7fb;
+      color: #333;
+    }
+
+    header {
+      background: #12355b;
+      color: white;
+      padding: 18px 20px;
+    }
+
+    .header-content {
+      max-width: 800px;
+      margin: auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .logo {
+      font-size: 16px;
+      font-weight: bold;
+    }
+
+    .back-link {
+      color: white;
+      text-decoration: none;
+      font-size: 14px;
+    }
+
+    .container {
+      max-width: 800px;
+      margin: auto;
+      padding: 25px 18px;
+    }
+
+    h1 {
+      color: #12355b;
+      font-size: 24px;
+      margin-bottom: 8px;
+    }
+
+    .subtitle {
+      color: #666;
+      margin-bottom: 20px;
+    }
+
+    .form-message {
+      display: none;
+      padding: 14px;
+      border-radius: 8px;
+      margin-bottom: 18px;
+      font-size: 14px;
+      font-weight: bold;
+    }
+
+    .form-message.success {
+      display: block;
+      background: #e6f7ec;
+      color: #1e7e34;
+      border: 1px solid #b7e4c7;
+    }
+
+    .form-message.error {
+      display: block;
+      background: #fdecea;
+      color: #c0392b;
+      border: 1px solid #f5c6cb;
+    }
+
+    .concern-card {
+      background: white;
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 15px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.07);
+    }
+
+    .concern-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 6px;
+    }
+
+    .concern-subject {
+      color: #12355b;
+      font-weight: bold;
+      font-size: 16px;
+    }
+
+    .status-badge {
+      display: inline-block;
+      padding: 4px 10px;
+      border-radius: 6px;
+      font-size: 11px;
+      font-weight: bold;
+    }
+
+    .status-badge.open {
+      background: #fff3cd;
+      color: #856404;
+    }
+
+    .status-badge.responded {
+      background: #e6f7ec;
+      color: #1e7e34;
+    }
+
+    .concern-meta {
+      font-size: 12px;
+      color: #777;
+      margin-bottom: 10px;
+    }
+
+    .concern-message {
+      font-size: 14px;
+      color: #333;
+      margin-bottom: 14px;
+      line-height: 1.5;
+      padding-bottom: 14px;
+      border-bottom: 1px solid #eee;
+    }
+
+    .admin-response-display {
+      background: #eef6fb;
+      border-radius: 8px;
+      padding: 12px;
+      margin-bottom: 10px;
+    }
+
+    .admin-response-label {
+      font-size: 12px;
+      font-weight: bold;
+      color: #12355b;
+      text-transform: uppercase;
+      margin-bottom: 5px;
+    }
+
+    .admin-response-display p {
+      font-size: 14px;
+      color: #333;
+      line-height: 1.5;
+    }
+
+    textarea {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      font-size: 14px;
+      font-family: inherit;
+      min-height: 80px;
+      resize: vertical;
+      margin-bottom: 10px;
+    }
+
+    textarea:focus {
+      border-color: #1d5d8f;
+      outline: none;
+    }
+
+    .respond-btn {
+      background: #12355b;
+      color: white;
+      border: none;
+      padding: 10px 16px;
+      border-radius: 8px;
+      font-weight: bold;
+      cursor: pointer;
+      font-size: 13px;
+    }
+
+    .respond-btn:disabled {
+      background: #9aa8b5;
+      cursor: not-allowed;
+    }
+
+    .loading-screen {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #12355b;
+      font-weight: bold;
+    }
+
+    .empty-state {
+      background: white;
+      padding: 30px;
+      border-radius: 12px;
+      text-align: center;
+      color: #777;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div id="loadingScreen" class="loading-screen">
+    Loading...
+  </div>
+
+  <div id="pageContent" style="display:none;">
+
+    <header>
+      <div class="header-content">
+        <div class="logo">DAILY STUDENT DIGITAL COMMUNICATION SYSTEM</div>
+        <a href="admin-dashboard.html" class="back-link">← Back to Dashboard</a>
+      </div>
+    </header>
+
+    <main class="container">
+
+      <h1>Parent Concerns & Feedback</h1>
+      <p class="subtitle">Messages sent by parents — respond below.</p>
+
+      <div id="formMessage" class="form-message"></div>
+
+      <div id="concernsList"></div>
+
+    </main>
+
+  </div>
+
+  <!-- Supabase JS SDK (must load before supabase-config.js) -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase-config.js"></script>
+
+  <script>
+    const loadingScreen = document.getElementById("loadingScreen");
+    const pageContent = document.getElementById("pageContent");
+    const concernsList = document.getElementById("concernsList");
+    const formMessage = document.getElementById("formMessage");
+
+    function showFormMessage(type, text) {
+      formMessage.className = "form-message " + type;
+      formMessage.textContent = text;
+      setTimeout(() => { formMessage.className = "form-message"; }, 3500);
+    }
+
+    function formatDate(dateStr) {
+      const d = new Date(dateStr);
+      return d.toLocaleDateString(undefined, { year: "numeric", month: "short", day: "numeric" });
+    }
+
+    async function loadConcerns() {
+      const { data: concerns } = await supabaseClient
+        .from("concerns")
+        .select("id, subject, message, status, admin_response, created_at, parents(full_name, email)")
+        .order("created_at", { ascending: false });
+
+      if (!concerns || concerns.length === 0) {
+        concernsList.innerHTML = '<div class="empty-state">No messages from parents yet.</div>';
+        return;
+      }
+
+      concernsList.innerHTML = "";
+
+      concerns.forEach(function (c) {
+        const isResponded = c.status === "Responded";
+        const parent = c.parents || {};
+        const card = document.createElement("div");
+        card.className = "concern-card";
+
+        card.innerHTML = `
+          <div class="concern-top">
+            <div class="concern-subject">${c.subject}</div>
+            <div class="status-badge ${isResponded ? 'responded' : 'open'}">
+              ${isResponded ? '✓ RESPONDED' : '⏳ AWAITING RESPONSE'}
+            </div>
+          </div>
+          <div class="concern-meta">From ${parent.full_name || 'Unknown Parent'} (${parent.email || ''}) · ${formatDate(c.created_at)}</div>
+          <div class="concern-message">${c.message}</div>
+          ${isResponded ? `
+            <div class="admin-response-display">
+              <div class="admin-response-label">Your Response</div>
+              <p>${c.admin_response}</p>
+            </div>
+          ` : `
+            <textarea class="response-input" data-id="${c.id}" placeholder="Type your response..."></textarea>
+            <button class="respond-btn" data-id="${c.id}">SEND RESPONSE</button>
+          `}
+        `;
+
+        concernsList.appendChild(card);
+      });
+
+      document.querySelectorAll(".respond-btn").forEach(function (btn) {
+        btn.addEventListener("click", async function () {
+          const id = btn.getAttribute("data-id");
+          const textarea = document.querySelector(`.response-input[data-id="${id}"]`);
+          const response = textarea.value.trim();
+
+          if (!response) {
+            showFormMessage("error", "Please type a response before sending.");
+            return;
+          }
+
+          btn.disabled = true;
+          btn.textContent = "SENDING...";
+
+          const { error } = await supabaseClient
+            .from("concerns")
+            .update({
+              admin_response: response,
+              status: "Responded",
+              responded_at: new Date().toISOString()
+            })
+            .eq("id", id);
+
+          if (error) {
+            showFormMessage("error", "Failed to send response: " + error.message);
+            btn.disabled = false;
+            btn.textContent = "SEND RESPONSE";
+          } else {
+            showFormMessage("success", "Response sent to parent!");
+            loadConcerns();
+          }
+        });
+      });
+    }
+
+    async function init() {
+      const { data: sessionData } = await supabaseClient.auth.getSession();
+      const session = sessionData.session;
+
+      if (!session) {
+        window.location.href = "admin-login.html";
+        return;
+      }
+
+      const { data: adminRow, error: adminError } = await supabaseClient
+        .from("admins")
+        .select("id")
+        .eq("user_id", session.user.id)
+        .single();
+
+      if (adminError || !adminRow) {
+        await supabaseClient.auth.signOut();
+        window.location.href = "admin-login.html";
+        return;
+      }
+
+      await loadConcerns();
+
+      loadingScreen.style.display = "none";
+      pageContent.style.display = "block";
+    }
+
+    init();
+  </script>
+
+</body>
+</html>
