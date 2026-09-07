@@ -1,1 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
+  <title>Notifications | Daily Student Digital Communication System</title>
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: Arial, sans-serif;
+    }
+
+    body {
+      background: #f4f7fb;
+      color: #333;
+    }
+
+    header {
+      background: #12355b;
+      color: white;
+      padding: 18px 20px;
+    }
+
+    .header-content {
+      max-width: 700px;
+      margin: auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .logo {
+      font-size: 16px;
+      font-weight: bold;
+    }
+
+    .back-link {
+      color: white;
+      text-decoration: none;
+      font-size: 14px;
+    }
+
+    .container {
+      max-width: 700px;
+      margin: auto;
+      padding: 25px 18px;
+    }
+
+    h1 {
+      color: #12355b;
+      font-size: 24px;
+      margin-bottom: 8px;
+    }
+
+    .subtitle {
+      color: #666;
+      margin-bottom: 22px;
+    }
+
+    .notif-card {
+      background: white;
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 15px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.07);
+      border-left: 4px solid #12355b;
+    }
+
+    .notif-title {
+      color: #12355b;
+      font-weight: bold;
+      font-size: 16px;
+      margin-bottom: 6px;
+    }
+
+    .notif-date {
+      font-size: 12px;
+      color: #999;
+      margin-bottom: 10px;
+    }
+
+    .notif-message {
+      font-size: 14px;
+      color: #333;
+      line-height: 1.5;
+    }
+
+    .loading-screen {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #12355b;
+      font-weight: bold;
+    }
+
+    .empty-state {
+      background: white;
+      padding: 30px;
+      border-radius: 12px;
+      text-align: center;
+      color: #777;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div id="loadingScreen" class="loading-screen">
+    Loading notifications...
+  </div>
+
+  <div id="pageContent" style="display:none;">
+
+    <header>
+      <div class="header-content">
+        <div class="logo">DAILY STUDENT CONNECT</div>
+        <a href="student-dashboard.html" class="back-link">← Back to Dashboard</a>
+      </div>
+    </header>
+
+    <main class="container">
+
+      <h1>Notifications</h1>
+      <p class="subtitle">Announcements from your school.</p>
+
+      <div id="notifList"></div>
+
+    </main>
+
+  </div>
+
+  <!-- Supabase JS SDK (must load before supabase-config.js) -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase-config.js"></script>
+
+  <script>
+    const loadingScreen = document.getElementById("loadingScreen");
+    const pageContent = document.getElementById("pageContent");
+    const notifList = document.getElementById("notifList");
+
+    function formatDate(dateStr) {
+      const d = new Date(dateStr);
+      return d.toLocaleDateString(undefined, { year: "numeric", month: "long", day: "numeric" });
+    }
+
+    async function init() {
+      const { data: sessionData } = await supabaseClient.auth.getSession();
+      const session = sessionData.session;
+
+      if (!session) {
+        window.location.href = "student-login.html";
+        return;
+      }
+
+      const { data: student, error } = await supabaseClient
+        .from("students")
+        .select("id")
+        .eq("user_id", session.user.id)
+        .single();
+
+      if (error || !student) {
+        await supabaseClient.auth.signOut();
+        window.location.href = "student-login.html";
+        return;
+      }
+
+      const { data: notifs } = await supabaseClient
+        .from("notifications")
+        .select("title, message, created_at")
+        .order("created_at", { ascending: false });
+
+      if (!notifs || notifs.length === 0) {
+        notifList.innerHTML = '<div class="empty-state">No notifications yet.</div>';
+      } else {
+        notifList.innerHTML = "";
+        notifs.forEach(function (n) {
+          const card = document.createElement("div");
+          card.className = "notif-card";
+          card.innerHTML = `
+            <div class="notif-title">${n.title}</div>
+            <div class="notif-date">${formatDate(n.created_at)}</div>
+            <div class="notif-message">${n.message}</div>
+          `;
+          notifList.appendChild(card);
+        });
+      }
+
+      loadingScreen.style.display = "none";
+      pageContent.style.display = "block";
+    }
+
+    init();
+  </script>
+
+</body>
+</html>
