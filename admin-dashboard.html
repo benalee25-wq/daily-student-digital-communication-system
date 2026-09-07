@@ -248,7 +248,7 @@
         <div class="stat-card">
           <div class="stat-icon">💬</div>
           <h3>Parent Concerns</h3>
-          <div class="stat-number">0</div>
+          <div class="stat-number" id="openConcernsCount">0</div>
         </div>
 
       </section>
@@ -284,7 +284,7 @@
           <p>View and search submitted daily reports.</p>
         </a>
 
-        <a href="admin-assignments.html" class="dashboard-card">
+        <a href="#" class="dashboard-card">
           <div class="icon">📚</div>
           <h3>Assignments</h3>
           <p>Monitor student assignments and deadlines.</p>
@@ -302,7 +302,7 @@
           <p>Review classwork scores and performance records.</p>
         </a>
 
-        <a href="#" class="dashboard-card">
+        <a href="admin-concerns.html" class="dashboard-card">
           <div class="icon">💬</div>
           <h3>Parent Concerns</h3>
           <p>View and respond to parent concerns.</p>
@@ -390,6 +390,14 @@
 
       document.getElementById("submittedTodayCount").textContent = submitted;
       document.getElementById("notSubmittedTodayCount").textContent = notSubmitted;
+
+      // Open (unresponded) parent concerns
+      const { count: openConcernsCount } = await supabaseClient
+        .from("concerns")
+        .select("*", { count: "exact", head: true })
+        .eq("status", "Open");
+
+      document.getElementById("openConcernsCount").textContent = openConcernsCount ?? 0;
 
       // 4. Reveal the dashboard
       loadingScreen.style.display = "none";
