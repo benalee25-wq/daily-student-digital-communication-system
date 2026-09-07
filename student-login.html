@@ -4,9 +4,10 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <title>Parent Login | Daily Student Digital Communication System</title>
+  <title>Student Login | Daily Student Digital Communication System</title>
 
   <style>
+
     * {
       margin: 0;
       padding: 0;
@@ -37,7 +38,18 @@
       margin-bottom: 25px;
     }
 
-    .parent-icon {
+    .logo h1 {
+      color: #12355b;
+      font-size: 24px;
+    }
+
+    .logo p {
+      color: #777;
+      margin-top: 8px;
+      font-size: 14px;
+    }
+
+    .student-icon {
       width: 70px;
       height: 70px;
       background: #e8f4fb;
@@ -49,24 +61,13 @@
       font-size: 35px;
     }
 
-    .logo h1 {
-      color: #12355b;
-      font-size: 22px;
-    }
-
-    .logo p {
-      color: #777;
-      margin-top: 8px;
-      font-size: 14px;
-      line-height: 1.5;
-    }
-
     h2 {
       text-align: center;
       color: #12355b;
       margin-bottom: 25px;
     }
 
+    /* Success / error banner */
     .form-message {
       display: none;
       padding: 14px;
@@ -138,7 +139,7 @@
 
     .forgot {
       text-align: right;
-      margin-top: 12px;
+      margin-top: 10px;
     }
 
     .forgot a {
@@ -151,7 +152,6 @@
       text-align: center;
       margin-top: 25px;
       color: #555;
-      line-height: 1.6;
     }
 
     .register a {
@@ -162,7 +162,7 @@
 
     .back-home {
       text-align: center;
-      margin-top: 22px;
+      margin-top: 20px;
     }
 
     .back-home a {
@@ -170,7 +170,9 @@
       text-decoration: none;
       font-size: 14px;
     }
+
   </style>
+
 </head>
 
 <body>
@@ -179,22 +181,25 @@
 
     <div class="logo">
 
-      <div class="parent-icon">👨‍👩‍👧</div>
+      <div class="student-icon">
+        🎓
+      </div>
 
-      <h1>DAILY STUDENT DIGITAL COMMUNICATION SYSTEM</h1>
+      <h1>DAILY STUDENT CONNECT</h1>
 
       <p>Connecting Students, Parents and Schools Every Day.</p>
 
     </div>
 
-    <h2>Parent / Guardian Login</h2>
+    <h2>Student Login</h2>
 
     <div id="formMessage" class="form-message"></div>
 
-    <form id="parentLoginForm" novalidate>
+    <form id="studentLoginForm" novalidate>
 
       <div class="form-group">
-        <label>Email Address</label>
+
+        <label>Student Email Address</label>
 
         <input
           type="email"
@@ -202,9 +207,12 @@
           placeholder="Enter your email address"
           required
         >
+
       </div>
 
+
       <div class="form-group">
+
         <label>Password</label>
 
         <input
@@ -213,7 +221,9 @@
           placeholder="Enter your password"
           required
         >
+
       </div>
+
 
       <button type="submit" class="login-btn" id="loginBtn">
         LOGIN
@@ -221,24 +231,35 @@
 
     </form>
 
+
     <div class="forgot">
-      <a href="#">Forgot Password?</a>
+
+      <a href="#">
+        Forgot Password?
+      </a>
+
     </div>
+
 
     <div class="register">
 
-      Don't have a Parent/Guardian account?
+      Don't have a student account?
 
       <br><br>
 
-      <a href="parent-register.html">
+      <a href="student-register.html">
         Register Here
       </a>
 
     </div>
 
+
     <div class="back-home">
-      <a href="index.html">← Back to Homepage</a>
+
+      <a href="index.html">
+        ← Back to Homepage
+      </a>
+
     </div>
 
   </div>
@@ -248,7 +269,7 @@
   <script src="supabase-config.js"></script>
 
   <script>
-    const form = document.getElementById("parentLoginForm");
+    const form = document.getElementById("studentLoginForm");
     const loginBtn = document.getElementById("loginBtn");
     const formMessage = document.getElementById("formMessage");
 
@@ -292,14 +313,14 @@
           return;
         }
 
-        const { data: parentRow, error: parentError } = await supabaseClient
-          .from("parents")
+        const { data: studentRow, error: studentError } = await supabaseClient
+          .from("students")
           .select("id")
           .eq("user_id", data.user.id)
           .single();
 
-        if (parentError || !parentRow) {
-          showFormMessage("error", "This account is not registered as a parent/guardian account.");
+        if (studentError || !studentRow) {
+          showFormMessage("error", "This account is not registered as a student account.");
           await supabaseClient.auth.signOut();
           return;
         }
@@ -307,7 +328,7 @@
         showFormMessage("success", "Login successful! Redirecting to your dashboard...");
 
         setTimeout(function () {
-          window.location.href = "parent-dashboard.html";
+          window.location.href = "student-dashboard.html";
         }, 1200);
 
       } catch (err) {
