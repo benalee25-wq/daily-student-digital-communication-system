@@ -308,7 +308,7 @@
           <p>View and respond to parent concerns.</p>
         </a>
 
-        <a href="#" class="dashboard-card">
+        <a href="admin-notifications.html" class="dashboard-card">
           <div class="icon">🔔</div>
           <h3>Notifications</h3>
           <p>Monitor system notifications and delivery status.</p>
@@ -335,7 +335,6 @@
     const dashboardContent = document.getElementById("dashboardContent");
 
     async function loadDashboard() {
-      // 1. Check if anyone is logged in at all
       const { data: sessionData } = await supabaseClient.auth.getSession();
       const session = sessionData.session;
 
@@ -344,7 +343,6 @@
         return;
       }
 
-      // 2. Confirm this logged-in user is actually an admin
       const { data: adminRow, error: adminError } = await supabaseClient
         .from("admins")
         .select("id")
@@ -357,7 +355,6 @@
         return;
       }
 
-      // 3. Load live counts (RLS lets admins see all rows in these tables)
       const { count: studentCount } = await supabaseClient
         .from("students")
         .select("*", { count: "exact", head: true });
@@ -369,8 +366,6 @@
       document.getElementById("studentCount").textContent = studentCount ?? 0;
       document.getElementById("parentCount").textContent = parentCount ?? 0;
 
-      // Reports submitted today (each student can only have one report per day,
-      // so counting today's rows in `reports` gives us how many students submitted)
       const todayStr = (function () {
         const d = new Date();
         const year = d.getFullYear();
@@ -391,7 +386,6 @@
       document.getElementById("submittedTodayCount").textContent = submitted;
       document.getElementById("notSubmittedTodayCount").textContent = notSubmitted;
 
-      // Open (unresponded) parent concerns
       const { count: openConcernsCount } = await supabaseClient
         .from("concerns")
         .select("*", { count: "exact", head: true })
@@ -399,7 +393,6 @@
 
       document.getElementById("openConcernsCount").textContent = openConcernsCount ?? 0;
 
-      // 4. Reveal the dashboard
       loadingScreen.style.display = "none";
       dashboardContent.style.display = "block";
     }
